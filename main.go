@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"net/http/httputil"
+	"net/url"
 	"os"
 	"strings"
 )
@@ -45,9 +46,20 @@ func main() {
 
 	proxy := &httputil.ReverseProxy{
 		Director: func(req *http.Request) {
+			forwardUrl := url.URL{
+				Host: req.Host,
+			}
+			if ssl {
+				forwardUrl.Scheme = "https"
+			} else {
+				forwardUrl.Scheme = "http"
+			}
+
+			req.Header.Set("PR-Forward-Url", forwardUrl.String())
+			req.Header.Set("PR-Forward-For", ParseRemoteAddr(req.RemoteAddr))
+
 			req.URL.Scheme = "http"
 			req.URL.Host = internalHost
-			req.Header.Set("PR-Forward-For", ParseRemoteAddr(req.RemoteAddr))
 		},
 	}
 
