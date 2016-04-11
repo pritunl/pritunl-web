@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -15,6 +16,14 @@ func ParseRemoteAddr(remoteAddr string) (addr string) {
 	return
 }
 
+func copyHeader(dst, src http.Header) {
+	for k, vv := range src {
+		for _, v := range vv {
+			dst.Add(k, v)
+		}
+	}
+}
+
 func main() {
 	redirectServer := os.Getenv("REDIRECT_SERVER")
 	bindHost := os.Getenv("BIND_HOST")
@@ -23,10 +32,40 @@ func main() {
 	certPath := os.Getenv("CERT_PATH")
 	keyPath := os.Getenv("KEY_PATH")
 	ssl := certPath != "" && keyPath != ""
+	var scheme string
+	if ssl {
+		scheme = "https"
+	} else {
+		scheme = "http"
+	}
 
 	if redirectServer == "true" && bindPort != "80" {
 		go http.ListenAndServe(bindHost+":80", http.HandlerFunc(func(
 			w http.ResponseWriter, req *http.Request) {
+
+			if strings.HasPrefix(req.URL.Path,
+				"/.well-known/acme-challenge/") {
+
+				acmeUrl := url.URL{
+					Scheme: "http",
+					Host:   internalHost,
+					Path:   req.URL.Path,
+				}
+
+				resp, err := http.Get(acmeUrl.String())
+				if err != nil {
+					panic(err)
+					http.Error(w, "", http.StatusInternalServerError)
+					return
+				}
+				defer resp.Body.Close()
+
+				copyHeader(w.Header(), resp.Header)
+				w.WriteHeader(resp.StatusCode)
+				io.Copy(w, resp.Body)
+
+				return
+			}
 
 			if ssl {
 				req.URL.Scheme = "https"
@@ -47,12 +86,8 @@ func main() {
 	proxy := &httputil.ReverseProxy{
 		Director: func(req *http.Request) {
 			forwardUrl := url.URL{
-				Host: req.Host,
-			}
-			if ssl {
-				forwardUrl.Scheme = "https"
-			} else {
-				forwardUrl.Scheme = "http"
+				Scheme: scheme,
+				Host:   req.Host,
 			}
 
 			req.Header.Set("PR-Forward-Url", forwardUrl.String())
