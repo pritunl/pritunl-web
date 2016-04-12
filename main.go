@@ -46,10 +46,13 @@ func main() {
 			if strings.HasPrefix(req.URL.Path,
 				"/.well-known/acme-challenge/") {
 
+				pathSplit := strings.Split(req.URL.Path, "/")
+				token := pathSplit[len(pathSplit)-1]
+
 				acmeUrl := url.URL{
 					Scheme: "http",
 					Host:   internalHost,
-					Path:   req.URL.Path,
+					Path:   "/.well-known/acme-challenge/" + token,
 				}
 
 				resp, err := http.Get(acmeUrl.String())
