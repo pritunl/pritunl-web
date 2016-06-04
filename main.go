@@ -25,6 +25,7 @@ func copyHeader(dst, src http.Header) {
 }
 
 func main() {
+	reverseProxyHeader := os.Getenv("REVERSE_PROXY_HEADER")
 	redirectServer := os.Getenv("REDIRECT_SERVER")
 	bindHost := os.Getenv("BIND_HOST")
 	bindPort := os.Getenv("BIND_PORT")
@@ -70,15 +71,21 @@ func main() {
 				return
 			}
 
-			if ssl {
+			req.URL.Host = req.Host
+			if reverseProxyHeader != "" &&
+				req.Header.Get(reverseProxyHeader) != "" {
+
 				req.URL.Scheme = "https"
 			} else {
-				req.URL.Scheme = "http"
-			}
+				if ssl {
+					req.URL.Scheme = "https"
+				} else {
+					req.URL.Scheme = "http"
+				}
 
-			req.URL.Host = req.Host
-			if bindPort != "443" {
-				req.URL.Host += ":" + bindPort
+				if bindPort != "443" {
+					req.URL.Host += ":" + bindPort
+				}
 			}
 
 			http.Redirect(w, req, req.URL.String(),
@@ -93,8 +100,10 @@ func main() {
 				Host:   req.Host,
 			}
 
-			req.Header.Set("PR-Forward-Url", forwardUrl.String())
-			req.Header.Set("PR-Forward-For", ParseRemoteAddr(req.RemoteAddr))
+			req.Header.Set("PR-Forwarded-Header",
+				req.Header.Get(reverseProxyHeader))
+			req.Header.Set("PR-Forwarded-Url", forwardUrl.String())
+			req.Header.Set("PR-Forwarded-For", ParseRemoteAddr(req.RemoteAddr))
 
 			req.URL.Scheme = "http"
 			req.URL.Host = internalHost
