@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"time"
 )
 
 func ParseRemoteAddr(remoteAddr string) (addr string) {
@@ -110,19 +111,18 @@ func main() {
 		},
 	}
 
+	server := http.Server{
+		Addr:         bindHost + ":" + bindPort,
+		Handler:      proxy,
+		ReadTimeout:  time.Minute,
+		WriteTimeout: time.Minute,
+	}
+
 	var err error
 	if ssl {
-		err = http.ListenAndServeTLS(
-			bindHost+":"+bindPort,
-			certPath,
-			keyPath,
-			proxy,
-		)
+		err = server.ListenAndServeTLS(certPath, keyPath)
 	} else {
-		err = http.ListenAndServe(
-			bindHost+":"+bindPort,
-			proxy,
-		)
+		err = server.ListenAndServe()
 	}
 	if err != nil {
 		panic(err)
