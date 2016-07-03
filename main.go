@@ -114,8 +114,8 @@ func main() {
 	server := http.Server{
 		Addr:         bindHost + ":" + bindPort,
 		Handler:      proxy,
-		ReadTimeout:  time.Minute,
-		WriteTimeout: time.Minute,
+		ReadTimeout:  2 * time.Minute,
+		WriteTimeout: 2 * time.Minute,
 	}
 
 	var err error
