@@ -87,7 +87,7 @@ type userPutData struct {
 	Name            string                   `json:"name"`
 	Email           string                   `json:"email"`
 	Groups          []string                 `json:"groups"`
-	Pin             string                   `json:"pin"`
+	Pin             interface{}              `json:"pin"`
 	Disabled        bool                     `json:"disabled"`
 	NetworkLinks    []string                 `json:"network_links"`
 	BypassSecondary bool                     `json:"bypass_secondary"`
@@ -102,6 +102,12 @@ func userPut(c *gin.Context) {
 	orgId := c.Params.ByName("org_id")
 	userId := c.Params.ByName("user_id")
 	data := &userPutData{}
+
+	switch data.Pin.(type) {
+	case string, bool:
+	default:
+		data.Pin = nil
+	}
 
 	req := &request.Request{
 		Method: "PUT",
