@@ -1,13 +1,14 @@
 package main
 
 import (
+	"github.com/Sirupsen/logrus"
+	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-web/constants"
+	"github.com/pritunl/pritunl-web/handlers"
 	"io"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
-	"os"
 	"strings"
-	"time"
 )
 
 func ParseRemoteAddr(remoteAddr string) (addr string) {
@@ -26,23 +27,8 @@ func copyHeader(dst, src http.Header) {
 }
 
 func main() {
-	reverseProxyHeader := os.Getenv("REVERSE_PROXY_HEADER")
-	redirectServer := os.Getenv("REDIRECT_SERVER")
-	bindHost := os.Getenv("BIND_HOST")
-	bindPort := os.Getenv("BIND_PORT")
-	internalHost := os.Getenv("INTERNAL_ADDRESS")
-	certPath := os.Getenv("CERT_PATH")
-	keyPath := os.Getenv("KEY_PATH")
-	ssl := certPath != "" && keyPath != ""
-	var scheme string
-	if ssl {
-		scheme = "https"
-	} else {
-		scheme = "http"
-	}
-
-	if redirectServer == "true" && bindPort != "80" {
-		go http.ListenAndServe(bindHost+":80", http.HandlerFunc(func(
+	if constants.RedirectServer == "true" && constants.BindPort != "80" {
+		go http.ListenAndServe(constants.BindHost+":80", http.HandlerFunc(func(
 			w http.ResponseWriter, req *http.Request) {
 
 			if strings.HasPrefix(req.URL.Path,
@@ -53,7 +39,7 @@ func main() {
 
 				acmeUrl := url.URL{
 					Scheme: "http",
-					Host:   internalHost,
+					Host:   constants.InternalHost,
 					Path:   "/.well-known/acme-challenge/" + token,
 				}
 
@@ -73,19 +59,15 @@ func main() {
 			}
 
 			req.URL.Host = req.Host
-			if reverseProxyHeader != "" &&
-				req.Header.Get(reverseProxyHeader) != "" {
+			if constants.ReverseProxyHeader != "" &&
+				req.Header.Get(constants.ReverseProxyHeader) != "" {
 
 				req.URL.Scheme = "https"
 			} else {
-				if ssl {
-					req.URL.Scheme = "https"
-				} else {
-					req.URL.Scheme = "http"
-				}
+				req.URL.Scheme = constants.Scheme
 
-				if bindPort != "443" {
-					req.URL.Host += ":" + bindPort
+				if constants.BindPort != "443" {
+					req.URL.Host += ":" + constants.BindPort
 				}
 			}
 
@@ -94,37 +76,20 @@ func main() {
 		}))
 	}
 
-	proxy := &httputil.ReverseProxy{
-		Director: func(req *http.Request) {
-			forwardUrl := url.URL{
-				Scheme: scheme,
-				Host:   req.Host,
-			}
-
-			req.Header.Set("PR-Forwarded-Header",
-				req.Header.Get(reverseProxyHeader))
-			req.Header.Set("PR-Forwarded-Url", forwardUrl.String())
-			req.Header.Set("PR-Forwarded-For", ParseRemoteAddr(req.RemoteAddr))
-
-			req.URL.Scheme = "http"
-			req.URL.Host = internalHost
-		},
-	}
-
-	server := http.Server{
-		Addr:         bindHost + ":" + bindPort,
-		Handler:      proxy,
-		ReadTimeout:  2 * time.Minute,
-		WriteTimeout: 2 * time.Minute,
-	}
+	router := gin.New()
+	handlers.Register(router)
 
 	var err error
-	if ssl {
-		err = server.ListenAndServeTLS(certPath, keyPath)
+	if constants.Ssl {
+		err = router.RunTLS(constants.BindHost+":"+constants.BindPort,
+			constants.CertPath, constants.KeyPath)
 	} else {
-		err = server.ListenAndServe()
+		err = router.Run(constants.BindHost + ":" + constants.BindPort)
 	}
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("main: Server error")
 		panic(err)
 	}
 }
