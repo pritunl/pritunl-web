@@ -11,9 +11,18 @@ func orgGet(c *gin.Context) {
 		orgId = "/" + orgId
 	}
 
+	var query map[string]string
+	page := c.Query("page")
+	if page != "" {
+		query = map[string]string{
+			"page": page,
+		}
+	}
+
 	req := &request.Request{
 		Method: "GET",
 		Path:   "/organization" + orgId,
+		Query:  query,
 	}
 
 	req.Do(c)
