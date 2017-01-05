@@ -88,7 +88,7 @@ func Register(engine *gin.Engine) {
 	engine.PUT("/server/:server_id", serverPut)
 	engine.DELETE("/server/:server_id", serverDelete)
 	engine.GET("/server/:server_id/organization", serverOrgGet)
-	engine.GET("/server/:server_id/organization/:org_id", serverOrgPut)
+	engine.PUT("/server/:server_id/organization/:org_id", serverOrgPut)
 	engine.DELETE("/server/:server_id/organization/:org_id", serverOrgDelete)
 	engine.GET("/server/:server_id/route", serverRouteGet)
 	engine.POST("/server/:server_id/route", serverRoutePost)
