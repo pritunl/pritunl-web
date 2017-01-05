@@ -113,5 +113,6 @@ func (r *Request) Do(c *gin.Context) {
 	defer resp.Body.Close()
 
 	copyHeaders(c.Writer.Header(), resp.Header)
+	c.Writer.Header().Del("Server")
 	io.Copy(c.Writer, resp.Body)
 }
