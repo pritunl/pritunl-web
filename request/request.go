@@ -33,7 +33,7 @@ func (r *Request) Do(c *gin.Context) {
 	var body io.Reader
 
 	if r.Json != nil {
-		err := c.Bind(r.Json)
+		err := c.BindJSON(r.Json)
 		if err != nil {
 			return
 		}
