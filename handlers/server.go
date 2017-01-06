@@ -241,13 +241,19 @@ func serverLinkGet(c *gin.Context) {
 	req.Do(c)
 }
 
+type serverLinkPutData struct {
+	UseLocalAddress bool `json:"use_local_address"`
+}
+
 func serverLinkPut(c *gin.Context) {
 	serverId := c.Params.ByName("server_id")
 	linkId := c.Params.ByName("link_id")
+	data := &serverLinkPutData{}
 
 	req := &request.Request{
 		Method: "PUT",
 		Path:   "/server/" + serverId + "/link/" + linkId,
+		Json:   data,
 	}
 
 	req.Do(c)
