@@ -11,9 +11,18 @@ func hostGet(c *gin.Context) {
 		hostId = "/" + hostId
 	}
 
+	var query map[string]string
+	page := c.Query("page")
+	if page != "" {
+		query = map[string]string{
+			"page": page,
+		}
+	}
+
 	req := &request.Request{
 		Method: "GET",
 		Path:   "/host" + hostId,
+		Query:  query,
 	}
 
 	req.Do(c)
