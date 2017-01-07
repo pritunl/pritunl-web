@@ -77,7 +77,7 @@ func userMultiPost(c *gin.Context) {
 	req := &request.Request{
 		Method: "POST",
 		Path:   "/user/" + orgId,
-		Json:   data,
+		Json:   &data,
 	}
 
 	req.Do(c)
