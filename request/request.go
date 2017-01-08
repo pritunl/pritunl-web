@@ -33,6 +33,14 @@ func (r *Request) Do(c *gin.Context) {
 	var body io.Reader
 
 	if r.Json != nil {
+		if c.ContentType() != "application/json" {
+			err := errortypes.RequestError{
+				errors.New("request: Invalid content type"),
+			}
+			c.AbortWithError(500, err)
+			return
+		}
+
 		err := c.BindJSON(r.Json)
 		if err != nil {
 			return
