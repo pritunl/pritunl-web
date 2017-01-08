@@ -34,7 +34,7 @@ type serverPostPutData struct {
 	NetworkMode      string   `json:"network_mode"`
 	NetworkStart     string   `json:"network_start"`
 	NetworkEnd       string   `json:"network_end"`
-	Restrict_routes  bool     `json:"restrict_routes"`
+	RestrictRoutes   bool     `json:"restrict_routes"`
 	Ipv6             bool     `json:"ipv6"`
 	Ipv6Firewall     bool     `json:"ipv6_firewall"`
 	BindAddress      string   `json:"bind_address"`
