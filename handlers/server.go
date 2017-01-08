@@ -149,6 +149,7 @@ func serverRouteGet(c *gin.Context) {
 
 type serverRoutePostPutData struct {
 	Network      string `json:"network"`
+	Comment      string `json:"comment"`
 	Nat          bool   `json:"nat"`
 	NatInterface string `json:"nat_interface"`
 	VpcRegion    string `json:"vpc_region"`
