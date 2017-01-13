@@ -8,12 +8,21 @@ import (
 func usersGet(c *gin.Context) {
 	orgId := c.Params.ByName("org_id")
 
-	var query map[string]string
+	query := map[string]string{}
+
 	page := c.Query("page")
 	if page != "" {
-		query = map[string]string{
-			"page": page,
-		}
+		query["page"] = page
+	}
+
+	search := c.Query("search")
+	if search != "" {
+		query["search"] = search
+	}
+
+	limit := c.Query("limit")
+	if limit != "" {
+		query["limit"] = limit
 	}
 
 	req := &request.Request{
