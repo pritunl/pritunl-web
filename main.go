@@ -91,6 +91,8 @@ func main() {
 		}()
 	}
 
+	gin.SetMode(gin.ReleaseMode)
+
 	router := gin.New()
 	handlers.Register(router)
 
