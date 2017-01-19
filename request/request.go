@@ -10,12 +10,14 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 var client = &http.Client{
 	CheckRedirect: func(req *http.Request, via []*http.Request) error {
 		return http.ErrUseLastResponse
 	},
+	Timeout: 2 * time.Minute,
 }
 
 type Request struct {
