@@ -29,52 +29,66 @@ func copyHeader(dst, src http.Header) {
 
 func main() {
 	if constants.RedirectServer == "true" && constants.BindPort != "80" {
-		go http.ListenAndServe(constants.BindHost+":80", http.HandlerFunc(func(
-			w http.ResponseWriter, req *http.Request) {
+		go func() {
+			server := http.Server{
+				Addr:         constants.BindHost + ":80",
+				ReadTimeout:  2 * time.Minute,
+				WriteTimeout: 2 * time.Minute,
+				Handler: http.HandlerFunc(func(
+					w http.ResponseWriter, req *http.Request) {
 
-			if strings.HasPrefix(req.URL.Path,
-				"/.well-known/acme-challenge/") {
+					if strings.HasPrefix(req.URL.Path,
+						"/.well-known/acme-challenge/") {
 
-				pathSplit := strings.Split(req.URL.Path, "/")
-				token := pathSplit[len(pathSplit)-1]
+						pathSplit := strings.Split(req.URL.Path, "/")
+						token := pathSplit[len(pathSplit)-1]
 
-				acmeUrl := url.URL{
-					Scheme: "http",
-					Host:   constants.InternalHost,
-					Path:   "/.well-known/acme-challenge/" + token,
-				}
+						acmeUrl := url.URL{
+							Scheme: "http",
+							Host:   constants.InternalHost,
+							Path:   "/.well-known/acme-challenge/" + token,
+						}
 
-				resp, err := http.Get(acmeUrl.String())
-				if err != nil {
-					panic(err)
-					http.Error(w, "", http.StatusInternalServerError)
-					return
-				}
-				defer resp.Body.Close()
+						resp, err := http.Get(acmeUrl.String())
+						if err != nil {
+							panic(err)
+							http.Error(w, "", http.StatusInternalServerError)
+							return
+						}
+						defer resp.Body.Close()
 
-				copyHeader(w.Header(), resp.Header)
-				w.WriteHeader(resp.StatusCode)
-				io.Copy(w, resp.Body)
+						copyHeader(w.Header(), resp.Header)
+						w.WriteHeader(resp.StatusCode)
+						io.Copy(w, resp.Body)
 
-				return
+						return
+					}
+
+					req.URL.Host = req.Host
+					if constants.ReverseProxyHeader != "" &&
+						req.Header.Get(constants.ReverseProxyHeader) != "" {
+
+						req.URL.Scheme = "https"
+					} else {
+						req.URL.Scheme = constants.Scheme
+
+						if constants.BindPort != "443" {
+							req.URL.Host += ":" + constants.BindPort
+						}
+					}
+
+					http.Redirect(w, req, req.URL.String(),
+						http.StatusMovedPermanently)
+				}),
 			}
 
-			req.URL.Host = req.Host
-			if constants.ReverseProxyHeader != "" &&
-				req.Header.Get(constants.ReverseProxyHeader) != "" {
-
-				req.URL.Scheme = "https"
-			} else {
-				req.URL.Scheme = constants.Scheme
-
-				if constants.BindPort != "443" {
-					req.URL.Host += ":" + constants.BindPort
-				}
+			err := server.ListenAndServe()
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Error("main: Redirect server error")
 			}
-
-			http.Redirect(w, req, req.URL.String(),
-				http.StatusMovedPermanently)
-		}))
+		}()
 	}
 
 	router := gin.New()
