@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 func ParseRemoteAddr(remoteAddr string) (addr string) {
@@ -79,12 +80,21 @@ func main() {
 	router := gin.New()
 	handlers.Register(router)
 
+	server := http.Server{
+		Addr:         constants.BindHost + ":" + constants.BindPort,
+		Handler:      router,
+		ReadTimeout:  2 * time.Minute,
+		WriteTimeout: 2 * time.Minute,
+	}
+
 	var err error
 	if constants.Ssl {
-		err = router.RunTLS(constants.BindHost+":"+constants.BindPort,
-			constants.CertPath, constants.KeyPath)
+		err = server.ListenAndServeTLS(
+			constants.CertPath,
+			constants.KeyPath,
+		)
 	} else {
-		err = router.Run(constants.BindHost + ":" + constants.BindPort)
+		err = server.ListenAndServe()
 	}
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
