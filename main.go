@@ -32,8 +32,8 @@ func main() {
 		go func() {
 			server := http.Server{
 				Addr:         constants.BindHost + ":80",
-				ReadTimeout:  2 * time.Minute,
-				WriteTimeout: 2 * time.Minute,
+				ReadTimeout:  1 * time.Minute,
+				WriteTimeout: 1 * time.Minute,
 				Handler: http.HandlerFunc(func(
 					w http.ResponseWriter, req *http.Request) {
 
