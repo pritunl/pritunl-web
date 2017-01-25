@@ -146,5 +146,4 @@ func Register(engine *gin.Engine) {
 	engine.DELETE("/user/:org_id/:user_id", userDelete)
 	engine.PUT("/user/:org_id/:user_id/otp_secret", userOtpSecretPut)
 	engine.GET("/user/:org_id/:user_id/audit", userAuditGet)
-	engine.POST("/auth/user", authUserPost)
 }

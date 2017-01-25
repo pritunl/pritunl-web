@@ -162,20 +162,3 @@ func userAuditGet(c *gin.Context) {
 
 	req.Do(c)
 }
-
-type authUserPutData struct {
-	Username     string   `json:"username"`
-	NetworkLinks []string `json:"network_links"`
-}
-
-func authUserPost(c *gin.Context) {
-	data := &authUserPutData{}
-
-	req := &request.Request{
-		Method: "POST",
-		Path:   "/auth/user",
-		Json:   data,
-	}
-
-	req.Do(c)
-}
