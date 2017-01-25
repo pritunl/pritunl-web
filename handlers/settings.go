@@ -17,8 +17,6 @@ func settingsGet(c *gin.Context) {
 type settingsPutData struct {
 	Username              string   `json:"username"`
 	Password              string   `json:"password"`
-	Token                 bool     `json:"token"`
-	Secret                bool     `json:"secret"`
 	ServerCert            string   `json:"server_cert"`
 	ServerKey             string   `json:"server_key"`
 	ServerPort            int      `json:"server_port"`
