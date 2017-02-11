@@ -61,6 +61,7 @@ type serverPostPutData struct {
 	LzoCompression   bool     `json:"lzo_compression"`
 	Cipher           string   `json:"cipher"`
 	Hash             string   `json:"hash"`
+	BlockOutsideDns  bool     `json:"block_outside_dns"`
 	JumboFrames      bool     `json:"jumbo_frames"`
 	Policy           string   `json:"policy"`
 }
