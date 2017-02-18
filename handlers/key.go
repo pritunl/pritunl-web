@@ -155,3 +155,20 @@ func ssoDuoPost(c *gin.Context) {
 
 	req.Do(c)
 }
+
+type ssoYubicoPostData struct {
+	Token string `json:"token"`
+	Key   string `json:"key"`
+}
+
+func ssoYubicoPost(c *gin.Context) {
+	data := &ssoYubicoPostData{}
+
+	req := &request.Request{
+		Method: "POST",
+		Path:   "/sso/yubico",
+		Json:   data,
+	}
+
+	req.Do(c)
+}

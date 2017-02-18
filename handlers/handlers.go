@@ -69,6 +69,7 @@ func Register(engine *gin.Engine) {
 	engine.GET("/sso/request", ssoRequestGet)
 	engine.GET("/sso/callback", ssoCallbackGet)
 	engine.POST("/sso/duo", ssoDuoPost)
+	engine.POST("/sso/yubico", ssoYubicoPost)
 
 	engine.GET("/log", logGet)
 	engine.GET("/logs", logsGet)

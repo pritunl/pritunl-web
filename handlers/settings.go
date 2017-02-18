@@ -35,6 +35,8 @@ type settingsPutData struct {
 	SsoDuoSecret          string   `json:"sso_duo_secret"`
 	SsoDuoHost            string   `json:"sso_duo_host"`
 	SsoDuoMode            string   `json:"sso_duo_mode"`
+	SsoYubicoClient       string   `json:"sso_yubico_client"`
+	SsoYubicoSecret       string   `json:"sso_yubico_secret"`
 	SsoRadiusSecret       string   `json:"sso_radius_secret"`
 	SsoRadiusHost         string   `json:"sso_radius_host"`
 	SsoOrg                string   `json:"sso_org"`
