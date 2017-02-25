@@ -22,6 +22,7 @@ func adminGet(c *gin.Context) {
 type adminPutData struct {
 	Username  string `json:"username"`
 	Password  string `json:"password"`
+	YubikeyId string `json:"yubikey_id"`
 	SuperUser bool   `json:"super_user"`
 	AuthApi   bool   `json:"auth_api"`
 	Token     string `json:"token"`
@@ -47,6 +48,7 @@ func adminPut(c *gin.Context) {
 type adminPostData struct {
 	Username  string `json:"username"`
 	Password  string `json:"password"`
+	YubikeyId string `json:"yubikey_id"`
 	OtpAuth   bool   `json:"otp_auth"`
 	AuthApi   bool   `json:"auth_api"`
 	Disabled  bool   `json:"disabled"`

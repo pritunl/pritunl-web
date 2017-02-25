@@ -6,9 +6,10 @@ import (
 )
 
 type authSessionPostData struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	OtpCode  string `json:"otp_code"`
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	YubicoKey string `json:"yubico_key"`
+	OtpCode   string `json:"otp_code"`
 }
 
 func authSessionPost(c *gin.Context) {
