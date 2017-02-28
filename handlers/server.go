@@ -50,6 +50,7 @@ type serverPostPutData struct {
 	PingTimeout      int      `json:"ping_timeout"`
 	LinkPingInterval int      `json:"link_ping_interval"`
 	LinkPingTimeout  int      `json:"link_ping_timeout"`
+	InactiveTimeout  int      `json:"inactive_timeout"`
 	OncHostname      string   `json:"onc_hostname"`
 	AllowedDevices   string   `json:"allowed_devices"`
 	MaxClients       int      `json:"max_clients"`
