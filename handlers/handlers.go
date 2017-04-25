@@ -71,7 +71,7 @@ func Register(engine *gin.Engine) {
 	engine.POST("/sso/duo", ssoDuoPost)
 	engine.POST("/sso/yubico", ssoYubicoPost)
 
-	engine.GET("/link/state", linkStatePut)
+	engine.PUT("/link/state", linkStatePut)
 
 	engine.GET("/log", logGet)
 	engine.GET("/logs", logsGet)
