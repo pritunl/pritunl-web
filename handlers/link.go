@@ -6,9 +6,9 @@ import (
 )
 
 type linkStatePutData struct {
-	PublicAddress string   `json:"public_address"`
-	Tunnels       int      `json:"tunnels"`
-	Errors        []string `json:"errors"`
+	PublicAddress string            `json:"public_address"`
+	Status        map[string]string `json:"status"`
+	Errors        []string          `json:"errors"`
 }
 
 func linkStatePut(c *gin.Context) {
