@@ -6,6 +6,7 @@ import (
 )
 
 type linkStatePutData struct {
+	Version       string            `json:"version"`
 	PublicAddress string            `json:"public_address"`
 	Status        map[string]string `json:"status"`
 	Errors        []string          `json:"errors"`
