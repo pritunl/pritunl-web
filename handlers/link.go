@@ -5,6 +5,24 @@ import (
 	"github.com/pritunl/pritunl-web/request"
 )
 
+func linkGet(c *gin.Context) {
+	var query map[string]string
+	page := c.Query("page")
+	if page != "" {
+		query = map[string]string{
+			"page": page,
+		}
+	}
+
+	req := &request.Request{
+		Method: "GET",
+		Path:   "/link",
+		Query:  query,
+	}
+
+	req.Do(c)
+}
+
 type linkStatePutData struct {
 	Version       string            `json:"version"`
 	PublicAddress string            `json:"public_address"`
