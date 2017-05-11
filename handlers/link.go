@@ -23,6 +23,17 @@ func linkGet(c *gin.Context) {
 	req.Do(c)
 }
 
+func linkLocationGet(c *gin.Context) {
+	linkId := c.Params.ByName("link_id")
+
+	req := &request.Request{
+		Method: "GET",
+		Path:   "/link/" + linkId + "/location",
+	}
+
+	req.Do(c)
+}
+
 type linkStatePutData struct {
 	Version       string            `json:"version"`
 	PublicAddress string            `json:"public_address"`
