@@ -23,6 +23,25 @@ func linkGet(c *gin.Context) {
 	req.Do(c)
 }
 
+type linkPutData struct {
+	Name    string `json:"name"`
+	Status  string `json:"status"`
+	Timeout int    `json:"timeout"`
+}
+
+func linkPut(c *gin.Context) {
+	linkId := c.Params.ByName("link_id")
+	data := &linkPutData{}
+
+	req := &request.Request{
+		Method: "PUT",
+		Path:   "/link/" + linkId,
+		Json:   data,
+	}
+
+	req.Do(c)
+}
+
 func linkLocationGet(c *gin.Context) {
 	linkId := c.Params.ByName("link_id")
 
