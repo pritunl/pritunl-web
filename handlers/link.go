@@ -29,14 +29,33 @@ type linkPutData struct {
 	Timeout int    `json:"timeout"`
 }
 
-func linkPut(c *gin.Context) {
-	linkId := c.Params.ByName("link_id")
-	data := &linkPutData{}
+type linkStatePutData struct {
+	Version       string            `json:"version"`
+	PublicAddress string            `json:"public_address"`
+	Status        map[string]string `json:"status"`
+	Errors        []string          `json:"errors"`
+}
 
-	req := &request.Request{
-		Method: "PUT",
-		Path:   "/link/" + linkId,
-		Json:   data,
+func linkPut(c *gin.Context) {
+	var req *request.Request
+	linkId := c.Params.ByName("link_id")
+
+	if linkId == "state" {
+		data := &linkStatePutData{}
+
+		req = &request.Request{
+			Method: "PUT",
+			Path:   "/link/state",
+			Json:   data,
+		}
+	} else {
+		data := &linkPutData{}
+
+		req = &request.Request{
+			Method: "PUT",
+			Path:   "/link/" + linkId,
+			Json:   data,
+		}
 	}
 
 	req.Do(c)
@@ -48,25 +67,6 @@ func linkLocationGet(c *gin.Context) {
 	req := &request.Request{
 		Method: "GET",
 		Path:   "/link/" + linkId + "/location",
-	}
-
-	req.Do(c)
-}
-
-type linkStatePutData struct {
-	Version       string            `json:"version"`
-	PublicAddress string            `json:"public_address"`
-	Status        map[string]string `json:"status"`
-	Errors        []string          `json:"errors"`
-}
-
-func linkStatePut(c *gin.Context) {
-	data := &linkStatePutData{}
-
-	req := &request.Request{
-		Method: "PUT",
-		Path:   "/link/state",
-		Json:   data,
 	}
 
 	req.Do(c)
