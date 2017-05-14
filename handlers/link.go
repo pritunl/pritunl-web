@@ -78,6 +78,17 @@ func linkPut(c *gin.Context) {
 	req.Do(c)
 }
 
+func linkDelete(c *gin.Context) {
+	linkId := c.Params.ByName("link_id")
+
+	req := &request.Request{
+		Method: "DELETE",
+		Path:   "/link/" + linkId,
+	}
+
+	req.Do(c)
+}
+
 func linkLocationGet(c *gin.Context) {
 	linkId := c.Params.ByName("link_id")
 
