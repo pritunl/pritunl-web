@@ -120,6 +120,18 @@ func linkLocationPost(c *gin.Context) {
 	req.Do(c)
 }
 
+func linkLocationDelete(c *gin.Context) {
+	linkId := c.Params.ByName("link_id")
+	locationId := c.Params.ByName("location_id")
+
+	req := &request.Request{
+		Method: "DELETE",
+		Path:   "/link/" + linkId + "/location/" + locationId,
+	}
+
+	req.Do(c)
+}
+
 type linkLocationRoutePostData struct {
 	Network string `json:"network"`
 }
