@@ -23,6 +23,23 @@ func linkGet(c *gin.Context) {
 	req.Do(c)
 }
 
+type linkPostData struct {
+	Name   string `json:"name"`
+	Status string `json:"status"`
+}
+
+func linkPost(c *gin.Context) {
+	data := &linkPutData{}
+
+	req := &request.Request{
+		Method: "POST",
+		Path:   "/link",
+		Json:   data,
+	}
+
+	req.Do(c)
+}
+
 type linkPutData struct {
 	Name    string `json:"name"`
 	Status  string `json:"status"`
