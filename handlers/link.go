@@ -119,3 +119,21 @@ func linkLocationPost(c *gin.Context) {
 
 	req.Do(c)
 }
+
+type linkLocationRoutePostData struct {
+	Network string `json:"network"`
+}
+
+func linkLocationRoutePost(c *gin.Context) {
+	linkId := c.Params.ByName("link_id")
+	locationId := c.Params.ByName("location_id")
+	data := &linkLocationRoutePostData{}
+
+	req := &request.Request{
+		Method: "POST",
+		Path:   "/link/" + linkId + "/location/" + locationId + "/route",
+		Json:   data,
+	}
+
+	req.Do(c)
+}
