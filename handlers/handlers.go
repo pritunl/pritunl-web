@@ -85,6 +85,8 @@ func Register(engine *gin.Engine) {
 		linkLocationRoutePut)
 	engine.DELETE("/link/:link_id/location/:location_id/route/:route_id",
 		linkLocationRouteDelete)
+	engine.GET("/link/:link_id/location/:location_id/host/:host_id/uri",
+		linkLocationHostUriGet)
 	engine.POST("/link/:link_id/location/:location_id/host",
 		linkLocationHostPost)
 	engine.PUT("/link/:link_id/location/:location_id/host/:host_id",

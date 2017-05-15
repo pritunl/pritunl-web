@@ -205,6 +205,26 @@ func linkLocationRouteDelete(c *gin.Context) {
 	req.Do(c)
 }
 
+type linkLocationHostUriGetData struct {
+	Hostname string `json:"hostname"`
+}
+
+func linkLocationHostUriGet(c *gin.Context) {
+	linkId := c.Params.ByName("link_id")
+	locationId := c.Params.ByName("location_id")
+	hostId := c.Params.ByName("host_id")
+	data := &linkLocationHostUriGetData{}
+
+	req := &request.Request{
+		Method: "GET",
+		Path: "/link/" + linkId + "/location/" + locationId +
+			"/host/" + hostId + "/uri",
+		Json: data,
+	}
+
+	req.Do(c)
+}
+
 type linkLocationHostPostData struct {
 	Name string `json:"name"`
 }
