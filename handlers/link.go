@@ -120,6 +120,27 @@ func linkLocationPost(c *gin.Context) {
 	req.Do(c)
 }
 
+type linkLocationPutData struct {
+	Name     string `json:"name"`
+	LinkId   string `json:"link_id"`
+	Location string `json:"location"`
+	Quality  string `json:"quality"`
+}
+
+func linkLocationPut(c *gin.Context) {
+	linkId := c.Params.ByName("link_id")
+	locationId := c.Params.ByName("location_id")
+	data := &linkLocationPutData{}
+
+	req := &request.Request{
+		Method: "PUT",
+		Path:   "/link/" + linkId + "/location/" + locationId,
+		Json:   data,
+	}
+
+	req.Do(c)
+}
+
 func linkLocationDelete(c *gin.Context) {
 	linkId := c.Params.ByName("link_id")
 	locationId := c.Params.ByName("location_id")
