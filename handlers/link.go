@@ -171,6 +171,40 @@ func linkLocationRoutePost(c *gin.Context) {
 	req.Do(c)
 }
 
+type linkLocationRoutePutData struct {
+	Network string `json:"network"`
+}
+
+func linkLocationRoutePut(c *gin.Context) {
+	linkId := c.Params.ByName("link_id")
+	locationId := c.Params.ByName("location_id")
+	routeId := c.Params.ByName("route_id")
+	data := &linkLocationRoutePostData{}
+
+	req := &request.Request{
+		Method: "PUT",
+		Path: "/link/" + linkId + "/location/" + locationId +
+			"/route/" + routeId,
+		Json: data,
+	}
+
+	req.Do(c)
+}
+
+func linkLocationRouteDelete(c *gin.Context) {
+	linkId := c.Params.ByName("link_id")
+	locationId := c.Params.ByName("location_id")
+	routeId := c.Params.ByName("route_id")
+
+	req := &request.Request{
+		Method: "DELETE",
+		Path: "/link/" + linkId + "/location/" + locationId +
+			"/route/" + routeId,
+	}
+
+	req.Do(c)
+}
+
 type linkLocationHostPostData struct {
 	Name string `json:"name"`
 }
@@ -184,6 +218,40 @@ func linkLocationHostPost(c *gin.Context) {
 		Method: "POST",
 		Path:   "/link/" + linkId + "/location/" + locationId + "/host",
 		Json:   data,
+	}
+
+	req.Do(c)
+}
+
+type linkLocationHostPutData struct {
+	Name string `json:"name"`
+}
+
+func linkLocationHostPut(c *gin.Context) {
+	linkId := c.Params.ByName("link_id")
+	locationId := c.Params.ByName("location_id")
+	hostId := c.Params.ByName("host_id")
+	data := &linkLocationHostPutData{}
+
+	req := &request.Request{
+		Method: "PUT",
+		Path: "/link/" + linkId + "/location/" + locationId +
+			"/host/" + hostId,
+		Json: data,
+	}
+
+	req.Do(c)
+}
+
+func linkLocationHostDelete(c *gin.Context) {
+	linkId := c.Params.ByName("link_id")
+	locationId := c.Params.ByName("location_id")
+	hostId := c.Params.ByName("host_id")
+
+	req := &request.Request{
+		Method: "DELETE",
+		Path: "/link/" + linkId + "/location/" + locationId +
+			"/host/" + hostId,
 	}
 
 	req.Do(c)
