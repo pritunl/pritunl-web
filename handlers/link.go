@@ -41,9 +41,8 @@ func linkPost(c *gin.Context) {
 }
 
 type linkPutData struct {
-	Name    string `json:"name"`
-	Status  string `json:"status"`
-	Timeout int    `json:"timeout"`
+	Name   string `json:"name"`
+	Status string `json:"status"`
 }
 
 type linkStatePutData struct {
