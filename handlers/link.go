@@ -219,8 +219,9 @@ func linkLocationHostUriGet(c *gin.Context) {
 }
 
 type linkLocationHostPostData struct {
-	Name    string `json:"name"`
-	Timeout int    `json:"timeout"`
+	Name     string `json:"name"`
+	Timeout  int    `json:"timeout"`
+	Priority int    `json:"priority"`
 }
 
 func linkLocationHostPost(c *gin.Context) {
@@ -238,8 +239,9 @@ func linkLocationHostPost(c *gin.Context) {
 }
 
 type linkLocationHostPutData struct {
-	Name    string `json:"name"`
-	Timeout int    `json:"timeout"`
+	Name     string `json:"name"`
+	Timeout  int    `json:"timeout"`
+	Priority int    `json:"priority"`
 }
 
 func linkLocationHostPut(c *gin.Context) {
