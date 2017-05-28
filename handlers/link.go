@@ -48,6 +48,7 @@ type linkPutData struct {
 type linkStatePutData struct {
 	Version       string            `json:"version"`
 	PublicAddress string            `json:"public_address"`
+	Provider      string            `json:"provider"`
 	Status        map[string]string `json:"status"`
 	Errors        []string          `json:"errors"`
 }
@@ -103,7 +104,6 @@ type linkLocationPostData struct {
 	Name     string `json:"name"`
 	LinkId   string `json:"link_id"`
 	Location string `json:"location"`
-	Quality  string `json:"quality"`
 }
 
 func linkLocationPost(c *gin.Context) {
@@ -123,7 +123,6 @@ type linkLocationPutData struct {
 	Name     string `json:"name"`
 	LinkId   string `json:"link_id"`
 	Location string `json:"location"`
-	Quality  string `json:"quality"`
 }
 
 func linkLocationPut(c *gin.Context) {
