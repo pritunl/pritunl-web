@@ -67,8 +67,12 @@ type settingsPutData struct {
 	UsWestGov1SecretKey   string   `json:"us_gov_west_1_secret_key"`
 	EuWest1AccessKey      string   `json:"eu_west_1_access_key"`
 	EuWest1SecretKey      string   `json:"eu_west_1_secret_key"`
+	EuWest2AccessKey      string   `json:"eu_west_2_access_key"`
+	EuWest2SecretKey      string   `json:"eu_west_2_secret_key"`
 	EuCentral1AccessKey   string   `json:"eu_central_1_access_key"`
 	EuCentral1SecretKey   string   `json:"eu_central_1_secret_key"`
+	CaCentral1AccessKey   string   `json:"ca_central_1_access_key"`
+	CaCentral1SecretKey   string   `json:"ca_central_1_secret_key"`
 	ApNortheast1AccessKey string   `json:"ap_northeast_1_access_key"`
 	ApNortheast1SecretKey string   `json:"ap_northeast_1_secret_key"`
 	ApNortheast2AccessKey string   `json:"ap_northeast_2_access_key"`
