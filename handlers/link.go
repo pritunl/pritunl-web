@@ -177,7 +177,7 @@ func linkLocationRoutePut(c *gin.Context) {
 	linkId := c.Params.ByName("link_id")
 	locationId := c.Params.ByName("location_id")
 	routeId := c.Params.ByName("route_id")
-	data := &linkLocationRoutePostData{}
+	data := &linkLocationRoutePutData{}
 
 	req := &request.Request{
 		Method: "PUT",
