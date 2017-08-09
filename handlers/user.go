@@ -55,6 +55,7 @@ type userPortForwardingData struct {
 type userPostData struct {
 	Name            string                   `json:"name"`
 	Email           string                   `json:"email"`
+	AuthType        string                   `json:"auth_type"`
 	Groups          []string                 `json:"groups"`
 	Pin             string                   `json:"pin"`
 	Disabled        bool                     `json:"disabled"`
@@ -95,6 +96,7 @@ func userMultiPost(c *gin.Context) {
 type userPutData struct {
 	Name            string                   `json:"name"`
 	Email           string                   `json:"email"`
+	AuthType        string                   `json:"auth_type"`
 	Groups          []string                 `json:"groups"`
 	Pin             interface{}              `json:"pin"`
 	Disabled        bool                     `json:"disabled"`
