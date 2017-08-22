@@ -48,6 +48,7 @@ type linkPutData struct {
 type linkStatePutData struct {
 	Version       string            `json:"version"`
 	PublicAddress string            `json:"public_address"`
+	Address6      string            `json:"address6"`
 	Provider      string            `json:"provider"`
 	Status        map[string]string `json:"status"`
 	Errors        []string          `json:"errors"`
