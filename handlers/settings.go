@@ -48,6 +48,7 @@ type settingsPutData struct {
 	SsoOneloginId         string   `json:"sso_onelogin_id"`
 	SsoOneloginSecret     string   `json:"sso_onelogin_secret"`
 	SsoClientCache        bool     `json:"sso_client_cache"`
+	ClientReconnect       bool     `json:"client_reconnect"`
 	Theme                 string   `json:"theme"`
 	PublicAddress         string   `json:"public_address"`
 	PublicAddress6        string   `json:"public_address6"`
