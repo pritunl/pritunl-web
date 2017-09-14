@@ -31,6 +31,8 @@ type settingsPutData struct {
 	PinMode               string   `json:"pin_mode"`
 	Sso                   string   `json:"sso"`
 	SsoMatch              []string `json:"sso_match"`
+	SsoGoogleKey          string   `json:"sso_google_key"`
+	SsoGoogleEmail        string   `json:"sso_google_email"`
 	SsoDuoToken           string   `json:"sso_duo_token"`
 	SsoDuoSecret          string   `json:"sso_duo_secret"`
 	SsoDuoHost            string   `json:"sso_duo_host"`
