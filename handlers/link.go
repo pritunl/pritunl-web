@@ -219,6 +219,20 @@ func linkLocationHostUriGet(c *gin.Context) {
 	req.Do(c)
 }
 
+func linkLocationHostConfGet(c *gin.Context) {
+	linkId := c.Params.ByName("link_id")
+	locationId := c.Params.ByName("location_id")
+	hostId := c.Params.ByName("host_id")
+
+	req := &request.Request{
+		Method: "GET",
+		Path: "/link/" + linkId + "/location/" + locationId +
+			"/host/" + hostId + "/conf",
+	}
+
+	req.Do(c)
+}
+
 type linkLocationHostPostData struct {
 	Name     string `json:"name"`
 	Timeout  int    `json:"timeout"`
