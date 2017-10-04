@@ -234,9 +234,11 @@ func linkLocationHostConfGet(c *gin.Context) {
 }
 
 type linkLocationHostPostData struct {
-	Name     string `json:"name"`
-	Timeout  int    `json:"timeout"`
-	Priority int    `json:"priority"`
+	Name          string `json:"name"`
+	Timeout       int    `json:"timeout"`
+	Priority      int    `json:"priority"`
+	StaticHost    bool   `json:"static_host"`
+	PublicAddress string `json:"public_address"`
 }
 
 func linkLocationHostPost(c *gin.Context) {
@@ -254,9 +256,11 @@ func linkLocationHostPost(c *gin.Context) {
 }
 
 type linkLocationHostPutData struct {
-	Name     string `json:"name"`
-	Timeout  int    `json:"timeout"`
-	Priority int    `json:"priority"`
+	Name          string `json:"name"`
+	Timeout       int    `json:"timeout"`
+	Priority      int    `json:"priority"`
+	StaticHost    bool   `json:"static_host"`
+	PublicAddress string `json:"public_address"`
 }
 
 func linkLocationHostPut(c *gin.Context) {
