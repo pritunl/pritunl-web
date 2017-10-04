@@ -43,6 +43,7 @@ func linkPost(c *gin.Context) {
 type linkPutData struct {
 	Name   string `json:"name"`
 	Status string `json:"status"`
+	Key    bool   `json:"key"`
 }
 
 type linkStatePutData struct {
@@ -124,7 +125,6 @@ type linkLocationPutData struct {
 	Name     string `json:"name"`
 	LinkId   string `json:"link_id"`
 	Location string `json:"location"`
-	Key      bool   `json:"key"`
 }
 
 func linkLocationPut(c *gin.Context) {
