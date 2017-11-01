@@ -180,7 +180,7 @@ func serverRoutesPost(c *gin.Context) {
 	req := &request.Request{
 		Method: "POST",
 		Path:   "/server/" + serverId + "/routes",
-		Json:   data,
+		Json:   &data,
 	}
 
 	req.Do(c)
