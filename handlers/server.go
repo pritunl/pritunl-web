@@ -173,6 +173,19 @@ func serverRoutePost(c *gin.Context) {
 	req.Do(c)
 }
 
+func serverRoutesPost(c *gin.Context) {
+	serverId := c.Params.ByName("server_id")
+	data := []*serverRoutePostPutData{}
+
+	req := &request.Request{
+		Method: "POST",
+		Path:   "/server/" + serverId + "/routes",
+		Json:   data,
+	}
+
+	req.Do(c)
+}
+
 func serverRoutePut(c *gin.Context) {
 	serverId := c.Params.ByName("server_id")
 	routeNet := c.Params.ByName("route_net")
