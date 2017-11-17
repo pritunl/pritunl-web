@@ -51,7 +51,6 @@ func main() {
 
 						resp, err := http.Get(acmeUrl.String())
 						if err != nil {
-							panic(err)
 							http.Error(w, "", http.StatusInternalServerError)
 							return
 						}
