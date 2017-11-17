@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/constants"
@@ -60,6 +61,14 @@ func main() {
 						w.WriteHeader(resp.StatusCode)
 						io.Copy(w, resp.Body)
 
+						return
+					} else if strings.HasPrefix(req.URL.Path, "/check") {
+						w.Header().Set(
+							"Content-Type",
+							"text/plain; charset=utf-8",
+						)
+						w.WriteHeader(200)
+						fmt.Fprintln(w, "200 OK")
 						return
 					}
 
