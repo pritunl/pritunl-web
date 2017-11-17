@@ -62,13 +62,16 @@ func main() {
 						io.Copy(w, resp.Body)
 
 						return
-					} else if strings.HasPrefix(req.URL.Path, "/check") {
+					} else if strings.HasPrefix(req.URL.Path, "/check") ||
+						strings.HasPrefix(req.URL.Path, "/ping") {
+
 						w.Header().Set(
 							"Content-Type",
 							"text/plain; charset=utf-8",
 						)
 						w.WriteHeader(200)
 						fmt.Fprintln(w, "200 OK")
+
 						return
 					}
 
