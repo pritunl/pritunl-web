@@ -89,7 +89,7 @@ func (r *Request) Do(c *gin.Context) {
 	}
 
 	req.Header.Set("PR-Forwarded-Header",
-		req.Header.Get(constants.ReverseProxyHeader))
+		c.Request.Header.Get(constants.ReverseProxyHeader))
 	req.Header.Set("PR-Forwarded-Url", forwardUrl.String())
 	req.Header.Set("PR-Forwarded-For",
 		parseRemoteAddr(c.Request.RemoteAddr))
