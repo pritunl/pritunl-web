@@ -30,7 +30,7 @@ type linkPostData struct {
 }
 
 func linkPost(c *gin.Context) {
-	data := &linkPutData{}
+	data := &linkPostData{}
 
 	req := &request.Request{
 		Method: "POST",
