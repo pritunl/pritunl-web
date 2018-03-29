@@ -95,10 +95,10 @@ func Register(engine *gin.Engine) {
 		linkLocationHostPut)
 	engine.DELETE("/link/:link_id/location/:location_id/host/:host_id",
 		linkLocationHostDelete)
-	engine.POST("/link/:link_id/location/:location_id/exclude",
-		linkLocationExcludePost)
-	engine.DELETE("/link/:link_id/location/:location_id/exclude/:exclude_id",
-		linkLocationExcludeDelete)
+	engine.POST("/link/:link_id/location/:location_id/peer",
+		linkLocationPeerPost)
+	engine.DELETE("/link/:link_id/location/:location_id/peer/:peer_id",
+		linkLocationPeerDelete)
 
 	engine.GET("/log", logGet)
 	engine.GET("/logs", logsGet)

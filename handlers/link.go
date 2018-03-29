@@ -297,34 +297,34 @@ func linkLocationHostDelete(c *gin.Context) {
 	req.Do(c)
 }
 
-type linkLocationExcludePostData struct {
-	ExcludeId string `json:"exclude_id"`
+type linkLocationPeerPostData struct {
+	PeerId string `json:"peer_id"`
 }
 
-func linkLocationExcludePost(c *gin.Context) {
+func linkLocationPeerPost(c *gin.Context) {
 	linkId := c.Params.ByName("link_id")
 	locationId := c.Params.ByName("location_id")
-	data := &linkLocationExcludePostData{}
+	data := &linkLocationPeerPostData{}
 
 	req := &request.Request{
 		Method: "POST",
 		Path: "/link/" + linkId + "/location/" + locationId +
-			"/exclude",
+			"/peer",
 		Json: data,
 	}
 
 	req.Do(c)
 }
 
-func linkLocationExcludeDelete(c *gin.Context) {
+func linkLocationPeerDelete(c *gin.Context) {
 	linkId := c.Params.ByName("link_id")
 	locationId := c.Params.ByName("location_id")
-	excludeId := c.Params.ByName("exclude_id")
+	peerId := c.Params.ByName("peer_id")
 
 	req := &request.Request{
 		Method: "DELETE",
 		Path: "/link/" + linkId + "/location/" + locationId +
-			"/exclude/" + excludeId,
+			"/peer/" + peerId,
 	}
 
 	req.Do(c)
