@@ -329,3 +329,36 @@ func linkLocationPeerDelete(c *gin.Context) {
 
 	req.Do(c)
 }
+
+type linkLocationTransitPostData struct {
+	TransitId string `json:"transit_id"`
+}
+
+func linkLocationTransitPost(c *gin.Context) {
+	linkId := c.Params.ByName("link_id")
+	locationId := c.Params.ByName("location_id")
+	data := &linkLocationTransitPostData{}
+
+	req := &request.Request{
+		Method: "POST",
+		Path: "/link/" + linkId + "/location/" + locationId +
+			"/transit",
+		Json: data,
+	}
+
+	req.Do(c)
+}
+
+func linkLocationTransitDelete(c *gin.Context) {
+	linkId := c.Params.ByName("link_id")
+	locationId := c.Params.ByName("location_id")
+	transitId := c.Params.ByName("transit_id")
+
+	req := &request.Request{
+		Method: "DELETE",
+		Path: "/link/" + linkId + "/location/" + locationId +
+			"/transit/" + transitId,
+	}
+
+	req.Do(c)
+}

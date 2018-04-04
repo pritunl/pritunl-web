@@ -99,6 +99,10 @@ func Register(engine *gin.Engine) {
 		linkLocationPeerPost)
 	engine.DELETE("/link/:link_id/location/:location_id/peer/:peer_id",
 		linkLocationPeerDelete)
+	engine.POST("/link/:link_id/location/:location_id/transit",
+		linkLocationTransitPost)
+	engine.DELETE("/link/:link_id/location/:location_id/transit/:transit_id",
+		linkLocationTransitDelete)
 
 	engine.GET("/log", logGet)
 	engine.GET("/logs", logsGet)
