@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"
@@ -116,6 +117,11 @@ func main() {
 
 	var err error
 	if constants.Ssl {
+		server.TLSConfig = &tls.Config{
+			MinVersion: tls.VersionTLS12,
+			MaxVersion: tls.VersionTLS12,
+		}
+
 		err = server.ListenAndServeTLS(
 			constants.CertPath,
 			constants.KeyPath,
