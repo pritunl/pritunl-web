@@ -27,6 +27,7 @@ type linkPostData struct {
 	Name   string `json:"name"`
 	Type   string `json:"type"`
 	Status string `json:"status"`
+	Ipv6   bool   `json:"ipv6"`
 }
 
 func linkPost(c *gin.Context) {
@@ -45,6 +46,7 @@ type linkPutData struct {
 	Name   string `json:"name"`
 	Status string `json:"status"`
 	Key    bool   `json:"key"`
+	Ipv6   bool   `json:"ipv6"`
 }
 
 type linkStatePutData struct {
