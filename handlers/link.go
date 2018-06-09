@@ -244,6 +244,7 @@ type linkLocationHostPostData struct {
 	Static        bool   `json:"static"`
 	PublicAddress string `json:"public_address"`
 	LocalAddress  string `json:"local_address"`
+	Address6      string `json:"address6"`
 }
 
 func linkLocationHostPost(c *gin.Context) {
@@ -267,6 +268,7 @@ type linkLocationHostPutData struct {
 	Static        bool   `json:"static"`
 	PublicAddress string `json:"public_address"`
 	LocalAddress  string `json:"local_address"`
+	Address6      string `json:"address6"`
 }
 
 func linkLocationHostPut(c *gin.Context) {
