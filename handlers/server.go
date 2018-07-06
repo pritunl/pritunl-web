@@ -64,6 +64,7 @@ type serverPostPutData struct {
 	BlockOutsideDns  bool     `json:"block_outside_dns"`
 	JumboFrames      bool     `json:"jumbo_frames"`
 	Policy           string   `json:"policy"`
+	MssFix           string   `json:"mss_fix"`
 }
 
 func serverPost(c *gin.Context) {
