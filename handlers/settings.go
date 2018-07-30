@@ -46,12 +46,12 @@ type settingsPutData struct {
 	SsoSamlIssuerUrl      string   `json:"sso_saml_issuer_url"`
 	SsoSamlCert           string   `json:"sso_saml_cert"`
 	SsoOktaAppId          string   `json:"sso_okta_app_id"`
-	SsoOktaPush           bool     `json:"sso_okta_push"`
+	SsoOktaMode           string   `json:"sso_okta_mode"`
 	SsoOktaToken          string   `json:"sso_okta_token"`
 	SsoOneloginAppId      string   `json:"sso_onelogin_app_id"`
 	SsoOneloginId         string   `json:"sso_onelogin_id"`
 	SsoOneloginSecret     string   `json:"sso_onelogin_secret"`
-	SsoOneloginPush       bool     `json:"sso_onelogin_push"`
+	SsoOneloginMode       string   `json:"sso_onelogin_mode"`
 	SsoCache              bool     `json:"sso_cache"`
 	SsoClientCache        bool     `json:"sso_client_cache"`
 	ClientReconnect       bool     `json:"client_reconnect"`
