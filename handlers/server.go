@@ -53,6 +53,7 @@ type serverPostPutData struct {
 	InactiveTimeout  int      `json:"inactive_timeout"`
 	AllowedDevices   string   `json:"allowed_devices"`
 	MaxClients       int      `json:"max_clients"`
+	MaxDevices       int      `json:"max_devices"`
 	ReplicaCount     int      `json:"replica_count"`
 	Vxlan            bool     `json:"vxlan"`
 	DnsMapping       bool     `json:"dns_mapping"`
