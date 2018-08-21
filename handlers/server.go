@@ -64,6 +64,7 @@ type serverPostPutData struct {
 	Hash             string   `json:"hash"`
 	BlockOutsideDns  bool     `json:"block_outside_dns"`
 	JumboFrames      bool     `json:"jumbo_frames"`
+	PreConnectMsg    string   `json:"pre_connect_msg"`
 	Policy           string   `json:"policy"`
 	MssFix           string   `json:"mss_fix"`
 }
