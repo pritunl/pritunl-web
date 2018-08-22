@@ -3,10 +3,12 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
+	logrus_syslog "github.com/sirupsen/logrus/hooks/syslog"
+	"log/syslog"
 	"github.com/gin-gonic/gin"
-	"github.com/pritunl/pritunl-web/constants"
-	"github.com/pritunl/pritunl-web/handlers"
+	"github.com/issuu/pritunl-web/constants"
+	"github.com/issuu/pritunl-web/handlers"
 	"io"
 	"net/http"
 	"net/url"
@@ -30,6 +32,13 @@ func copyHeader(dst, src http.Header) {
 }
 
 func main() {
+	hook, hook_err := logrus_syslog.NewSyslogHook("", "", syslog.LOG_DEBUG, "")
+	if hook_err != nil {
+		log.Error("Unable to connect to local syslog daemon")
+	} else {
+		log.AddHook(hook)
+	}
+
 	if constants.RedirectServer == "true" && constants.BindPort != "80" {
 		go func() {
 			server := http.Server{
@@ -76,7 +85,11 @@ func main() {
 						return
 					}
 
-					req.URL.Host = req.Host
+					if constants.ServerHost != "" {
+						req.URL.Host = constants.ServerHost
+					} else {
+						req.URL.Host = req.Host
+					}
 					if constants.ReverseProxyHeader != "" &&
 						req.Header.Get(constants.ReverseProxyHeader) != "" {
 
@@ -96,7 +109,7 @@ func main() {
 
 			err := server.ListenAndServe()
 			if err != nil {
-				logrus.WithFields(logrus.Fields{
+				log.WithFields(log.Fields{
 					"error": err,
 				}).Error("main: Redirect server error")
 			}
@@ -130,7 +143,7 @@ func main() {
 		err = server.ListenAndServe()
 	}
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
+		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("main: Server error")
 		panic(err)
