@@ -1,12 +1,15 @@
 package request
 
 import (
+        //"fmt"
+        //log "github.com/sirupsen/logrus"
+
 	"bytes"
 	"encoding/json"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
-	"github.com/pritunl/pritunl-web/constants"
-	"github.com/pritunl/pritunl-web/errortypes"
+	"github.com/issuu/pritunl-web/constants"
+	"github.com/issuu/pritunl-web/errortypes"
 	"io"
 	"net/http"
 	"net/url"
@@ -69,9 +72,13 @@ func (r *Request) Do(c *gin.Context) {
 		return
 	}
 
+	forwardHost := c.Request.Host
+	if constants.ServerHost != "" {
+		forwardHost = constants.ServerHost
+	}
 	forwardUrl := url.URL{
 		Scheme: constants.Scheme,
-		Host:   c.Request.Host,
+		Host:   forwardHost,
 	}
 
 	if r.Query != nil {

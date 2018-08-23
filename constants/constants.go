@@ -10,6 +10,7 @@ var (
 	BindHost           = os.Getenv("BIND_HOST")
 	BindPort           = os.Getenv("BIND_PORT")
 	InternalHost       = os.Getenv("INTERNAL_ADDRESS")
+	ServerHost         = os.Getenv("SERVER_HOST")
 	CertPath           = os.Getenv("CERT_PATH")
 	KeyPath            = os.Getenv("KEY_PATH")
 	Ssl                bool

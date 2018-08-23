@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -11,7 +11,7 @@ import (
 func Recovery(c *gin.Context) {
 	defer func() {
 		if r := recover(); r != nil {
-			logrus.WithFields(logrus.Fields{
+			log.WithFields(log.Fields{
 				"error": errors.New(fmt.Sprintf("%s", r)),
 			}).Error("handlers: Handler panic")
 			c.Writer.WriteHeader(http.StatusInternalServerError)
@@ -24,7 +24,7 @@ func Recovery(c *gin.Context) {
 func Errors(c *gin.Context) {
 	c.Next()
 	for _, err := range c.Errors {
-		logrus.WithFields(logrus.Fields{
+		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("handlers: Handler error")
 	}
