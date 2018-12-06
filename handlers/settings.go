@@ -66,6 +66,8 @@ type settingsPutData struct {
 	CloudProvider         string   `json:"cloud_provider"`
 	Route53Region         string   `json:"route53_region"`
 	Route53Zone           string   `json:"route53_zone"`
+	OracleUserOcid        string   `json:"oracle_user_ocid"`
+	OraclePublicKey       string   `json:"oracle_public_key"`
 	UsEast1AccessKey      string   `json:"us_east_1_access_key"`
 	UsEast1SecretKey      string   `json:"us_east_1_secret_key"`
 	UsEast2AccessKey      string   `json:"us_east_2_access_key"`
