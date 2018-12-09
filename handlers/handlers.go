@@ -5,7 +5,12 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-web/constants"
+	"github.com/pritunl/pritunl-web/errortypes"
+	"github.com/pritunl/pritunl-web/utils"
 	"net/http"
+	"net/url"
+	"strings"
 )
 
 func Recovery(c *gin.Context) {
@@ -30,8 +35,32 @@ func Errors(c *gin.Context) {
 	}
 }
 
+func Redirect(c *gin.Context) {
+	if constants.ReverseProxyProtoHeader != "" &&
+		strings.ToLower(c.Request.Header.Get(
+			constants.ReverseProxyProtoHeader)) == "http" {
+
+		u, err := url.Parse(c.Request.URL.String())
+		if err != nil {
+			err = errortypes.RequestError{
+				errors.Wrap(err, "request: URL parse error"),
+			}
+			c.AbortWithError(418, err)
+			return
+		}
+
+		u.Host = utils.StripPort(c.Request.Host)
+		u.Scheme = "https"
+
+		c.Abort()
+		c.Redirect(http.StatusMovedPermanently, u.String())
+		return
+	}
+}
+
 func Register(engine *gin.Engine) {
 	engine.Use(Recovery)
+	engine.Use(Errors)
 	engine.Use(Errors)
 
 	engine.GET("/admin", adminGet)
