@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/constants"
@@ -53,12 +54,23 @@ func main() {
 
 						resp, err := http.Get(acmeUrl.String())
 						if err != nil {
-							http.Error(w, "", http.StatusInternalServerError)
+							http.Error(
+								w,
+								fmt.Sprintf(
+									"%d %s",
+									http.StatusInternalServerError,
+									http.StatusText(
+										http.StatusInternalServerError,
+									),
+								),
+								http.StatusInternalServerError,
+							)
 							return
 						}
 						defer resp.Body.Close()
 
 						copyHeader(w.Header(), resp.Header)
+						w.Header().Del("Server")
 						w.WriteHeader(resp.StatusCode)
 						io.Copy(w, resp.Body)
 
