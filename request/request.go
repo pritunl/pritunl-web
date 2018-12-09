@@ -130,7 +130,7 @@ func (r *Request) Do(c *gin.Context) {
 	io.Copy(c.Writer, resp.Body)
 }
 
-func WriteError(w http.ResponseWriter, r *http.Request, code int, err error) {
+func WriteError(w http.ResponseWriter, code int, err error) {
 	http.Error(w, fmt.Sprintf("%d %s", code, http.StatusText(code)), code)
 
 	logrus.WithFields(logrus.Fields{
@@ -138,7 +138,7 @@ func WriteError(w http.ResponseWriter, r *http.Request, code int, err error) {
 	}).Error("request: Request error")
 }
 
-func DoCheck(w http.ResponseWriter, req *http.Request) {
+func DoCheck(w http.ResponseWriter, r *http.Request) {
 	reqUrl := "http://" + constants.InternalHost + "/check"
 
 	req, err := http.NewRequest("GET", reqUrl, nil)
@@ -146,26 +146,26 @@ func DoCheck(w http.ResponseWriter, req *http.Request) {
 		err = errortypes.RequestError{
 			errors.Wrap(err, "request: Create request failed"),
 		}
-		WriteError(w, req, 500, err)
+		WriteError(w, 500, err)
 		return
 	}
 
 	forwardUrl := url.URL{
 		Scheme: constants.Scheme,
-		Host:   req.Host,
+		Host:   r.Host,
 	}
 
 	req.Header.Set("PR-Forwarded-Header",
-		req.Header.Get(constants.ReverseProxyHeader))
+		r.Header.Get(constants.ReverseProxyHeader))
 	req.Header.Set("PR-Forwarded-Url", forwardUrl.String())
-	req.Header.Set("PR-Forwarded-For", parseRemoteAddr(req.RemoteAddr))
+	req.Header.Set("PR-Forwarded-For", parseRemoteAddr(r.RemoteAddr))
 
 	resp, err := client.Do(req)
 	if err != nil {
 		err = errortypes.RequestError{
 			errors.Wrap(err, "request: Request failed"),
 		}
-		WriteError(w, req, 500, err)
+		WriteError(w, 500, err)
 		return
 	}
 	defer resp.Body.Close()
