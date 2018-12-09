@@ -61,7 +61,7 @@ func Redirect(c *gin.Context) {
 func Register(engine *gin.Engine) {
 	engine.Use(Recovery)
 	engine.Use(Errors)
-	engine.Use(Errors)
+	engine.Use(Redirect)
 
 	engine.GET("/admin", adminGet)
 	engine.GET("/admin/:admin_id", adminGet)
