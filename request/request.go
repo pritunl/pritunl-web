@@ -3,6 +3,8 @@ package request
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/constants"
@@ -126,4 +128,50 @@ func (r *Request) Do(c *gin.Context) {
 	c.Writer.Header().Del("Server")
 	c.Writer.WriteHeader(resp.StatusCode)
 	io.Copy(c.Writer, resp.Body)
+}
+
+func WriteError(w http.ResponseWriter, r *http.Request, code int, err error) {
+	http.Error(w, fmt.Sprintf("%d %s", code, http.StatusText(code)), code)
+
+	logrus.WithFields(logrus.Fields{
+		"error": err,
+	}).Error("request: Request error")
+}
+
+func DoCheck(w http.ResponseWriter, req *http.Request) {
+	reqUrl := "http://" + constants.InternalHost + "/check"
+
+	req, err := http.NewRequest("GET", reqUrl, nil)
+	if err != nil {
+		err = errortypes.RequestError{
+			errors.Wrap(err, "request: Create request failed"),
+		}
+		WriteError(w, req, 500, err)
+		return
+	}
+
+	forwardUrl := url.URL{
+		Scheme: constants.Scheme,
+		Host:   req.Host,
+	}
+
+	req.Header.Set("PR-Forwarded-Header",
+		req.Header.Get(constants.ReverseProxyHeader))
+	req.Header.Set("PR-Forwarded-Url", forwardUrl.String())
+	req.Header.Set("PR-Forwarded-For", parseRemoteAddr(req.RemoteAddr))
+
+	resp, err := client.Do(req)
+	if err != nil {
+		err = errortypes.RequestError{
+			errors.Wrap(err, "request: Request failed"),
+		}
+		WriteError(w, req, 500, err)
+		return
+	}
+	defer resp.Body.Close()
+
+	copyHeaders(w.Header(), resp.Header)
+	w.Header().Del("Server")
+	w.WriteHeader(resp.StatusCode)
+	io.Copy(w, resp.Body)
 }

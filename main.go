@@ -2,11 +2,11 @@ package main
 
 import (
 	"crypto/tls"
-	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/constants"
 	"github.com/pritunl/pritunl-web/handlers"
+	"github.com/pritunl/pritunl-web/request"
 	"io"
 	"net/http"
 	"net/url"
@@ -66,13 +66,7 @@ func main() {
 					} else if strings.HasPrefix(req.URL.Path, "/check") ||
 						strings.HasPrefix(req.URL.Path, "/ping") {
 
-						w.Header().Set(
-							"Content-Type",
-							"text/plain; charset=utf-8",
-						)
-						w.WriteHeader(200)
-						fmt.Fprintln(w, "200 OK")
-
+						request.DoCheck(w, req)
 						return
 					}
 
