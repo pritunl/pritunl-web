@@ -34,6 +34,9 @@ type settingsPutData struct {
 	SsoAzureDirectoryId   string   `json:"sso_azure_directory_id"`
 	SsoAzureAppId         string   `json:"sso_azure_app_id"`
 	SsoAzureAppSecret     string   `json:"sso_azure_app_secret"`
+	SsoAuthZeroDomain     string   `json:"sso_authzero_domain"`
+	SsoAuthZeroAppId      string   `json:"sso_authzero_app_id"`
+	SsoAuthZeroAppSecret  string   `json:"sso_authzero_app_secret"`
 	SsoGoogleKey          string   `json:"sso_google_key"`
 	SsoGoogleEmail        string   `json:"sso_google_email"`
 	SsoDuoToken           string   `json:"sso_duo_token"`
