@@ -33,7 +33,7 @@ func copyHeader(dst, src http.Header) {
 func main() {
 	if constants.RedirectServer == "true" && constants.BindPort != "80" {
 		go func() {
-			server := http.Server{
+			server := &http.Server{
 				Addr:         constants.BindHost + ":80",
 				ReadTimeout:  1 * time.Minute,
 				WriteTimeout: 1 * time.Minute,
@@ -114,7 +114,7 @@ func main() {
 	router := gin.New()
 	handlers.Register(router)
 
-	server := http.Server{
+	server := &http.Server{
 		Addr:         constants.BindHost + ":" + constants.BindPort,
 		Handler:      router,
 		ReadTimeout:  2 * time.Minute,
