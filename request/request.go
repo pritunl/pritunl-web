@@ -10,6 +10,7 @@ import (
 	"github.com/pritunl/pritunl-web/constants"
 	"github.com/pritunl/pritunl-web/errortypes"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"time"
@@ -122,12 +123,27 @@ func (r *Request) Do(c *gin.Context) {
 		c.AbortWithError(500, err)
 		return
 	}
-	defer resp.Body.Close()
 
-	copyHeaders(c.Writer.Header(), resp.Header)
-	c.Writer.Header().Del("Server")
-	c.Writer.WriteHeader(resp.StatusCode)
-	io.Copy(c.Writer, resp.Body)
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		err = errortypes.RequestError{
+			errors.Wrap(err, "request: Request read failed"),
+		}
+		c.AbortWithError(500, err)
+		resp.Body.Close()
+		return
+	}
+
+	resp.Body.Close()
+
+	c.Status(resp.StatusCode)
+	header := c.Writer.Header()
+	copyHeaders(header, resp.Header)
+	header.Del("Server")
+	_, err = c.Writer.Write(data)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func WriteError(w http.ResponseWriter, code int, err error) {
