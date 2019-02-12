@@ -136,10 +136,10 @@ func (r *Request) Do(c *gin.Context) {
 
 	resp.Body.Close()
 
-	c.Status(resp.StatusCode)
 	header := c.Writer.Header()
 	copyHeaders(header, resp.Header)
 	header.Del("Server")
+	c.Status(resp.StatusCode)
 	_, err = c.Writer.Write(data)
 	if err != nil {
 		panic(err)
@@ -184,10 +184,24 @@ func DoCheck(w http.ResponseWriter, r *http.Request) {
 		WriteError(w, 500, err)
 		return
 	}
-	defer resp.Body.Close()
 
-	copyHeaders(w.Header(), resp.Header)
-	w.Header().Del("Server")
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		err = errortypes.RequestError{
+			errors.Wrap(err, "request: Request read failed"),
+		}
+		WriteError(w, 500, err)
+		return
+	}
+
+	resp.Body.Close()
+
+	header := w.Header()
+	copyHeaders(header, resp.Header)
+	header.Del("Server")
 	w.WriteHeader(resp.StatusCode)
-	io.Copy(w, resp.Body)
+	_, err = w.Write(data)
+	if err != nil {
+		panic(err)
+	}
 }
