@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/constants"
@@ -22,14 +23,14 @@ func Recovery(c *gin.Context) {
 	c.Next()
 }
 
-//func Errors(c *gin.Context) {
-//	c.Next()
-//	for _, err := range c.Errors {
-//		logrus.WithFields(logrus.Fields{
-//			"error": err,
-//		}).Error("handlers: Handler error")
-//	}
-//}
+func Errors(c *gin.Context) {
+	c.Next()
+	for _, err := range c.Errors {
+		logrus.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("handlers: Handler error")
+	}
+}
 
 func Redirect(c *gin.Context) {
 	if constants.ReverseProxyProtoHeader != "" &&
