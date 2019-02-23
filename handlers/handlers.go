@@ -1,39 +1,35 @@
 package handlers
 
 import (
-	"fmt"
-	"github.com/Sirupsen/logrus"
+	"net/http"
+	"net/url"
+	"strings"
+
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/constants"
 	"github.com/pritunl/pritunl-web/errortypes"
 	"github.com/pritunl/pritunl-web/utils"
-	"net/http"
-	"net/url"
-	"strings"
 )
 
 func Recovery(c *gin.Context) {
 	defer func() {
 		if r := recover(); r != nil {
-			logrus.WithFields(logrus.Fields{
-				"error": errors.New(fmt.Sprintf("%s", r)),
-			}).Error("handlers: Handler panic")
-			c.Writer.WriteHeader(http.StatusInternalServerError)
+			c.AbortWithStatus(http.StatusNotExtended)
 		}
 	}()
 
 	c.Next()
 }
 
-func Errors(c *gin.Context) {
-	c.Next()
-	for _, err := range c.Errors {
-		logrus.WithFields(logrus.Fields{
-			"error": err,
-		}).Error("handlers: Handler error")
-	}
-}
+//func Errors(c *gin.Context) {
+//	c.Next()
+//	for _, err := range c.Errors {
+//		logrus.WithFields(logrus.Fields{
+//			"error": err,
+//		}).Error("handlers: Handler error")
+//	}
+//}
 
 func Redirect(c *gin.Context) {
 	if constants.ReverseProxyProtoHeader != "" &&
@@ -60,7 +56,6 @@ func Redirect(c *gin.Context) {
 
 func Register(engine *gin.Engine) {
 	engine.Use(Recovery)
-	engine.Use(Errors)
 	engine.Use(Redirect)
 
 	engine.GET("/admin", adminGet)
