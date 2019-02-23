@@ -4,16 +4,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/Sirupsen/logrus"
+	"io"
+	"net/http"
+	"net/url"
+	"time"
+
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/constants"
 	"github.com/pritunl/pritunl-web/errortypes"
-	"io"
-	"io/ioutil"
-	"net/http"
-	"net/url"
-	"time"
 )
 
 var client = &http.Client{
@@ -42,7 +41,7 @@ func (r *Request) Do(c *gin.Context) {
 			err := errortypes.RequestError{
 				errors.New("request: Invalid content type"),
 			}
-			c.AbortWithError(500, err)
+			c.AbortWithError(520, err)
 			return
 		}
 
@@ -56,7 +55,7 @@ func (r *Request) Do(c *gin.Context) {
 			err = errortypes.RequestError{
 				errors.Wrap(err, "request: Json marshal error"),
 			}
-			c.AbortWithError(500, err)
+			c.AbortWithError(521, err)
 			return
 		}
 
@@ -68,7 +67,7 @@ func (r *Request) Do(c *gin.Context) {
 		err = errortypes.RequestError{
 			errors.Wrap(err, "request: Create request failed"),
 		}
-		c.AbortWithError(500, err)
+		c.AbortWithError(522, err)
 		return
 	}
 
@@ -120,38 +119,19 @@ func (r *Request) Do(c *gin.Context) {
 		err = errortypes.RequestError{
 			errors.Wrap(err, "request: Request failed"),
 		}
-		c.AbortWithError(500, err)
+		c.AbortWithError(502, err)
 		return
 	}
+	defer resp.Body.Close()
 
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		err = errortypes.RequestError{
-			errors.Wrap(err, "request: Request read failed"),
-		}
-		c.AbortWithError(500, err)
-		resp.Body.Close()
-		return
-	}
-
-	resp.Body.Close()
-
-	header := c.Writer.Header()
-	copyHeaders(header, resp.Header)
-	header.Del("Server")
-	c.Status(resp.StatusCode)
-	_, err = c.Writer.Write(data)
-	if err != nil {
-		panic(err)
-	}
+	copyHeaders(c.Writer.Header(), resp.Header)
+	c.Writer.Header().Del("Server")
+	c.Writer.WriteHeader(resp.StatusCode)
+	io.Copy(c.Writer, resp.Body)
 }
 
 func WriteError(w http.ResponseWriter, code int, err error) {
 	http.Error(w, fmt.Sprintf("%d %s", code, http.StatusText(code)), code)
-
-	logrus.WithFields(logrus.Fields{
-		"error": err,
-	}).Error("request: Request error")
 }
 
 func DoCheck(w http.ResponseWriter, r *http.Request) {
@@ -162,7 +142,7 @@ func DoCheck(w http.ResponseWriter, r *http.Request) {
 		err = errortypes.RequestError{
 			errors.Wrap(err, "request: Create request failed"),
 		}
-		WriteError(w, 500, err)
+		WriteError(w, 525, err)
 		return
 	}
 
@@ -181,27 +161,13 @@ func DoCheck(w http.ResponseWriter, r *http.Request) {
 		err = errortypes.RequestError{
 			errors.Wrap(err, "request: Request failed"),
 		}
-		WriteError(w, 500, err)
+		WriteError(w, 502, err)
 		return
 	}
+	defer resp.Body.Close()
 
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		err = errortypes.RequestError{
-			errors.Wrap(err, "request: Request read failed"),
-		}
-		WriteError(w, 500, err)
-		return
-	}
-
-	resp.Body.Close()
-
-	header := w.Header()
-	copyHeaders(header, resp.Header)
-	header.Del("Server")
+	copyHeaders(w.Header(), resp.Header)
+	w.Header().Del("Server")
 	w.WriteHeader(resp.StatusCode)
-	_, err = w.Write(data)
-	if err != nil {
-		panic(err)
-	}
+	io.Copy(w, resp.Body)
 }
