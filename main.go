@@ -3,16 +3,17 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/Sirupsen/logrus"
-	"github.com/gin-gonic/gin"
-	"github.com/pritunl/pritunl-web/constants"
-	"github.com/pritunl/pritunl-web/handlers"
-	"github.com/pritunl/pritunl-web/request"
 	"io"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/Sirupsen/logrus"
+	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-web/constants"
+	"github.com/pritunl/pritunl-web/handlers"
+	"github.com/pritunl/pritunl-web/request"
 )
 
 func ParseRemoteAddr(remoteAddr string) (addr string) {
@@ -115,10 +116,12 @@ func main() {
 	handlers.Register(router)
 
 	server := &http.Server{
-		Addr:         constants.BindHost + ":" + constants.BindPort,
-		Handler:      router,
-		ReadTimeout:  2 * time.Minute,
-		WriteTimeout: 2 * time.Minute,
+		Addr:              constants.BindHost + ":" + constants.BindPort,
+		Handler:           router,
+		ReadTimeout:       2 * time.Minute,
+		ReadHeaderTimeout: 30 * time.Second,
+		WriteTimeout:      2 * time.Minute,
+		IdleTimeout:       1 * time.Minute,
 	}
 
 	var err error
