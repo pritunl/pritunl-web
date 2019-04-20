@@ -157,6 +157,7 @@ type serverRoutePostPutData struct {
 	Metric       int    `json:"metric"`
 	Nat          bool   `json:"nat"`
 	NatInterface string `json:"nat_interface"`
+	NatNetmap    string `json:"nat_netmap"`
 	Advertise    bool   `json:"advertise"`
 	VpcRegion    string `json:"vpc_region"`
 	VpcId        string `json:"vpc_id"`
