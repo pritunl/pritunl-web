@@ -28,6 +28,7 @@ type settingsPutData struct {
 	EmailServer           string   `json:"email_server"`
 	EmailUsername         string   `json:"email_username"`
 	EmailPassword         string   `json:"email_password"`
+	EmailTls              bool     `json:"email_tls"`
 	PinMode               string   `json:"pin_mode"`
 	Sso                   string   `json:"sso"`
 	SsoMatch              []string `json:"sso_match"`
