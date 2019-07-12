@@ -79,16 +79,26 @@ type settingsPutData struct {
 	UsWest1SecretKey      string   `json:"us_west_1_secret_key"`
 	UsWest2AccessKey      string   `json:"us_west_2_access_key"`
 	UsWest2SecretKey      string   `json:"us_west_2_secret_key"`
+	UsEastGov1AccessKey   string   `json:"us_gov_east_1_access_key"`
+	UsEastGov1SecretKey   string   `json:"us_gov_east_1_secret_key"`
 	UsWestGov1AccessKey   string   `json:"us_gov_west_1_access_key"`
 	UsWestGov1SecretKey   string   `json:"us_gov_west_1_secret_key"`
+	EuNorth1AccessKey     string   `json:"eu_north_1_access_key"`
+	EuNorth1SecretKey     string   `json:"eu_north_1_secret_key"`
 	EuWest1AccessKey      string   `json:"eu_west_1_access_key"`
 	EuWest1SecretKey      string   `json:"eu_west_1_secret_key"`
 	EuWest2AccessKey      string   `json:"eu_west_2_access_key"`
 	EuWest2SecretKey      string   `json:"eu_west_2_secret_key"`
+	EuWest3AccessKey      string   `json:"eu_west_3_access_key"`
+	EuWest3SecretKey      string   `json:"eu_west_3_secret_key"`
 	EuCentral1AccessKey   string   `json:"eu_central_1_access_key"`
 	EuCentral1SecretKey   string   `json:"eu_central_1_secret_key"`
 	CaCentral1AccessKey   string   `json:"ca_central_1_access_key"`
 	CaCentral1SecretKey   string   `json:"ca_central_1_secret_key"`
+	CnNorth1AccessKey     string   `json:"cn_north_1_access_key"`
+	CnNorth1SecretKey     string   `json:"cn_north_1_secret_key"`
+	CnNorthwest1AccessKey string   `json:"cn_northwest_1_access_key"`
+	CnNorthwest1SecretKey string   `json:"cn_northwest_1_secret_key"`
 	ApNortheast1AccessKey string   `json:"ap_northeast_1_access_key"`
 	ApNortheast1SecretKey string   `json:"ap_northeast_1_secret_key"`
 	ApNortheast2AccessKey string   `json:"ap_northeast_2_access_key"`
@@ -97,6 +107,8 @@ type settingsPutData struct {
 	ApSoutheast1SecretKey string   `json:"ap_southeast_1_secret_key"`
 	ApSoutheast2AccessKey string   `json:"ap_southeast_2_access_key"`
 	ApSoutheast2SecretKey string   `json:"ap_southeast_2_secret_key"`
+	ApEast1AccessKey      string   `json:"ap_east_1_access_key"`
+	ApEast1SecretKey      string   `json:"ap_east_1_secret_key"`
 	ApSouth1AccessKey     string   `json:"ap_south_1_access_key"`
 	ApSouth1SecretKey     string   `json:"ap_south_1_secret_key"`
 	SaEast1AccessKey      string   `json:"sa_east_1_access_key"`
