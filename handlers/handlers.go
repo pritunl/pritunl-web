@@ -13,6 +13,10 @@ import (
 	"github.com/pritunl/pritunl-web/utils"
 )
 
+func Limiter(c *gin.Context) {
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 5000)
+}
+
 func Recovery(c *gin.Context) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -56,6 +60,7 @@ func Redirect(c *gin.Context) {
 }
 
 func Register(engine *gin.Engine) {
+	engine.Use(Limiter)
 	engine.Use(Recovery)
 	engine.Use(Redirect)
 
