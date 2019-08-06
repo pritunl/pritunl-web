@@ -14,7 +14,7 @@ import (
 )
 
 func Limiter(c *gin.Context) {
-	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 5000)
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 50000)
 }
 
 func Recovery(c *gin.Context) {
