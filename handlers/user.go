@@ -56,6 +56,7 @@ type userPostData struct {
 	Name            string                   `json:"name"`
 	Email           string                   `json:"email"`
 	AuthType        string                   `json:"auth_type"`
+	YubicoId        string                   `json:"yubico_id"`
 	Groups          []string                 `json:"groups"`
 	Pin             string                   `json:"pin"`
 	Disabled        bool                     `json:"disabled"`
@@ -97,6 +98,7 @@ type userPutData struct {
 	Name            string                   `json:"name"`
 	Email           string                   `json:"email"`
 	AuthType        string                   `json:"auth_type"`
+	YubicoId        string                   `json:"yubico_id"`
 	Groups          []string                 `json:"groups"`
 	Pin             interface{}              `json:"pin"`
 	Disabled        bool                     `json:"disabled"`
