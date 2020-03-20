@@ -104,6 +104,43 @@ func keyApiShortGet(c *gin.Context) {
 	req.Do(c)
 }
 
+type keyWgPutPostData struct {
+	Data      string `json:"data"`
+	Nonce     string `json:"nonce"`
+	PublicKey string `json:"public_key"`
+	Signature string `json:"signature"`
+}
+
+func keyWgPut(c *gin.Context) {
+	orgId := c.Params.ByName("org_id")
+	userId := c.Params.ByName("user_id")
+	serverId := c.Params.ByName("server_id")
+	data := &keyWgPutPostData{}
+
+	req := &request.Request{
+		Method: "PUT",
+		Path:   "/key/wg/" + orgId + "/" + userId + "/" + serverId,
+		Json:   data,
+	}
+
+	req.Do(c)
+}
+
+func keyWgPost(c *gin.Context) {
+	orgId := c.Params.ByName("org_id")
+	userId := c.Params.ByName("user_id")
+	serverId := c.Params.ByName("server_id")
+	data := &keyWgPutPostData{}
+
+	req := &request.Request{
+		Method: "POST",
+		Path:   "/key/wg/" + orgId + "/" + userId + "/" + serverId,
+		Json:   data,
+	}
+
+	req.Do(c)
+}
+
 type ssoAuthenticatePostData struct {
 	Username string `json:"username"`
 }

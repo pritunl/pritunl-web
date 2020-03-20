@@ -95,6 +95,8 @@ func Register(engine *gin.Engine) {
 	engine.GET("/k/:short_code", keyShortGet)
 	engine.DELETE("/k/:short_code", keyShortDelete)
 	engine.GET("/ku/:short_code", keyApiShortGet)
+	engine.POST("/key/wg/:org_id/:user_id/:server_id/", keyWgPost)
+	engine.PUT("/key/wg/:org_id/:user_id/:server_id/", keyWgPut)
 	engine.POST("/sso/authenticate", ssoAuthenticatePost)
 	engine.GET("/sso/request", ssoRequestGet)
 	engine.GET("/sso/callback", ssoCallbackGet)
