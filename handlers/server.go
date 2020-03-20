@@ -31,15 +31,18 @@ func serverGet(c *gin.Context) {
 type serverPostPutData struct {
 	Name             string   `json:"name"`
 	Network          string   `json:"network"`
+	NetworkWg        string   `json:"network_wg"`
 	NetworkMode      string   `json:"network_mode"`
 	NetworkStart     string   `json:"network_start"`
 	NetworkEnd       string   `json:"network_end"`
 	RestrictRoutes   bool     `json:"restrict_routes"`
+	Wg               bool     `json:"wg"`
 	Ipv6             bool     `json:"ipv6"`
 	Ipv6Firewall     bool     `json:"ipv6_firewall"`
 	BindAddress      string   `json:"bind_address"`
 	Protocol         string   `json:"protocol"`
 	Port             int      `json:"port"`
+	PortWg           int      `json:"port_wg"`
 	DhParamBits      int      `json:"dh_param_bits"`
 	Groups           []string `json:"groups"`
 	MultiDevice      bool     `json:"multi_device"`
