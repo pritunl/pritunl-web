@@ -67,6 +67,7 @@ type settingsPutData struct {
 	PublicAddress         string   `json:"public_address"`
 	PublicAddress6        string   `json:"public_address6"`
 	RoutedSubnet6         string   `json:"routed_subnet6"`
+	RoutedSubnet6Wg       string   `json:"routed_subnet6_wg"`
 	ReverseProxy          bool     `json:"reverse_proxy"`
 	CloudProvider         string   `json:"cloud_provider"`
 	Route53Region         string   `json:"route53_region"`

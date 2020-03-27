@@ -33,6 +33,7 @@ type hostPutData struct {
 	PublicAddress     string `json:"public_address"`
 	PublicAddress6    string `json:"public_address6"`
 	RoutedSubnet6     string `json:"routed_subnet6"`
+	RoutedSubnet6Wg   string `json:"routed_subnet6_wg"`
 	ProxyNdp          bool   `json:"proxy_ndp"`
 	LocalAddress      string `json:"local_address"`
 	LocalAddress6     string `json:"local_address6"`
