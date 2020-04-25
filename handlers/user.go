@@ -63,6 +63,7 @@ type userPostData struct {
 	NetworkLinks    []string                 `json:"network_links"`
 	BypassSecondary bool                     `json:"bypass_secondary"`
 	ClientToClient  bool                     `json:"client_to_client"`
+	MacAddresses    []string                 `json:"mac_addresses"`
 	DnsServers      []string                 `json:"dns_servers"`
 	DnsSuffix       string                   `json:"dns_suffix"`
 	PortForwarding  []userPortForwardingData `json:"port_forwarding"`
@@ -105,6 +106,7 @@ type userPutData struct {
 	NetworkLinks    []string                 `json:"network_links"`
 	BypassSecondary bool                     `json:"bypass_secondary"`
 	ClientToClient  bool                     `json:"client_to_client"`
+	MacAddresses    []string                 `json:"mac_addresses"`
 	DnsServers      []string                 `json:"dns_servers"`
 	DnsSuffix       string                   `json:"dns_suffix"`
 	PortForwarding  []userPortForwardingData `json:"port_forwarding"`
