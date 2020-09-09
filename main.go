@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/constants"
 	"github.com/pritunl/pritunl-web/handlers"
