@@ -23,7 +23,10 @@ type settingsPutData struct {
 	AcmeDomain            string   `json:"acme_domain"`
 	Auditing              string   `json:"auditing"`
 	Monitoring            string   `json:"monitoring"`
-	InfluxdbUri           string   `json:"influxdb_uri"`
+	InfluxdbUrl           string   `json:"influxdb_url"`
+	InfluxdbOrg           string   `json:"influxdb_org"`
+	InfluxdbBucket        string   `json:"influxdb_bucket"`
+	InfluxdbToken         string   `json:"influxdb_token"`
 	EmailFrom             string   `json:"email_from"`
 	EmailServer           string   `json:"email_server"`
 	EmailUsername         string   `json:"email_username"`
