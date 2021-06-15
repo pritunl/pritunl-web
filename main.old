@@ -125,7 +125,6 @@ func main() {
 	}
 
 	var err error
-/*
 	if constants.Ssl {
 		server.TLSConfig = &tls.Config{
 			MinVersion: tls.VersionTLS12,
@@ -139,8 +138,6 @@ func main() {
 	} else {
 		err = server.ListenAndServe()
 	}
-*/
-	err = server.ListenAndServe()
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"error": err,
