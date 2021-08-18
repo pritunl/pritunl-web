@@ -62,6 +62,7 @@ type settingsPutData struct {
 	SsoOneloginId         string   `json:"sso_onelogin_id"`
 	SsoOneloginSecret     string   `json:"sso_onelogin_secret"`
 	SsoOneloginMode       string   `json:"sso_onelogin_mode"`
+	Ipv6                  bool     `json:"ipv6"`
 	SsoCache              bool     `json:"sso_cache"`
 	SsoClientCache        bool     `json:"sso_client_cache"`
 	RestrictImport        bool     `json:"restrict_import"`
