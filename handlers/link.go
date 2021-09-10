@@ -51,14 +51,20 @@ type linkPutData struct {
 	Action string `json:"action"`
 }
 
+type linkStateHostData struct {
+	State   bool `json:"state"`
+	Latency int  `json:"latency"`
+}
+
 type linkStatePutData struct {
-	Version       string            `json:"version"`
-	PublicAddress string            `json:"public_address"`
-	LocalAddress  string            `json:"local_address"`
-	Address6      string            `json:"address6"`
-	Provider      string            `json:"provider"`
-	Status        map[string]string `json:"status"`
-	Errors        []string          `json:"errors"`
+	Version       string                       `json:"version"`
+	PublicAddress string                       `json:"public_address"`
+	LocalAddress  string                       `json:"local_address"`
+	Address6      string                       `json:"address6"`
+	Provider      string                       `json:"provider"`
+	Status        map[string]string            `json:"status"`
+	Hosts         map[string]linkStateHostData `json:"hosts"`
+	Errors        []string                     `json:"errors"`
 }
 
 func linkPut(c *gin.Context) {
