@@ -24,11 +24,12 @@ func linkGet(c *gin.Context) {
 }
 
 type linkPostData struct {
-	Name   string `json:"name"`
-	Type   string `json:"type"`
-	Status string `json:"status"`
-	Ipv6   bool   `json:"ipv6"`
-	Action string `json:"action"`
+	Name      string `json:"name"`
+	Type      string `json:"type"`
+	Status    string `json:"status"`
+	Ipv6      bool   `json:"ipv6"`
+	HostCheck bool   `json:"host_check"`
+	Action    string `json:"action"`
 }
 
 func linkPost(c *gin.Context) {
@@ -44,11 +45,12 @@ func linkPost(c *gin.Context) {
 }
 
 type linkPutData struct {
-	Name   string `json:"name"`
-	Status string `json:"status"`
-	Key    bool   `json:"key"`
-	Ipv6   bool   `json:"ipv6"`
-	Action string `json:"action"`
+	Name      string `json:"name"`
+	Status    string `json:"status"`
+	Key       bool   `json:"key"`
+	Ipv6      bool   `json:"ipv6"`
+	HostCheck bool   `json:"host_check"`
+	Action    string `json:"action"`
 }
 
 type linkStateHostData struct {
