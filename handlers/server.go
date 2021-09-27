@@ -29,52 +29,58 @@ func serverGet(c *gin.Context) {
 }
 
 type serverPostPutData struct {
-	Name             string   `json:"name"`
-	Network          string   `json:"network"`
-	NetworkWg        string   `json:"network_wg"`
-	NetworkMode      string   `json:"network_mode"`
-	NetworkStart     string   `json:"network_start"`
-	NetworkEnd       string   `json:"network_end"`
-	RestrictRoutes   bool     `json:"restrict_routes"`
-	Wg               bool     `json:"wg"`
-	Ipv6             bool     `json:"ipv6"`
-	Ipv6Firewall     bool     `json:"ipv6_firewall"`
-	BindAddress      string   `json:"bind_address"`
-	Protocol         string   `json:"protocol"`
-	Port             int      `json:"port"`
-	PortWg           int      `json:"port_wg"`
-	DhParamBits      int      `json:"dh_param_bits"`
-	Groups           []string `json:"groups"`
-	MultiDevice      bool     `json:"multi_device"`
-	DnsServers       []string `json:"dns_servers"`
-	SearchDomain     string   `json:"search_domain"`
-	InterClient      bool     `json:"inter_client"`
-	PingInterval     int      `json:"ping_interval"`
-	PingTimeout      int      `json:"ping_timeout"`
-	LinkPingInterval int      `json:"link_ping_interval"`
-	LinkPingTimeout  int      `json:"link_ping_timeout"`
-	InactiveTimeout  int      `json:"inactive_timeout"`
-	SessionTimeout   int      `json:"session_timeout"`
-	AllowedDevices   string   `json:"allowed_devices"`
-	MaxClients       int      `json:"max_clients"`
-	MaxDevices       int      `json:"max_devices"`
-	ReplicaCount     int      `json:"replica_count"`
-	Vxlan            bool     `json:"vxlan"`
-	DnsMapping       bool     `json:"dns_mapping"`
-	Debug            bool     `json:"debug"`
-	OtpAuth          bool     `json:"otp_auth"`
-	LzoCompression   bool     `json:"lzo_compression"`
-	Cipher           string   `json:"cipher"`
-	Hash             string   `json:"hash"`
-	BlockOutsideDns  bool     `json:"block_outside_dns"`
-	JumboFrames      bool     `json:"jumbo_frames"`
-	PreConnectMsg    string   `json:"pre_connect_msg"`
-	Policy           string   `json:"policy"`
-	MssFix           string   `json:"mss_fix"`
+	Name             string      `json:"name"`
+	Network          string      `json:"network"`
+	NetworkWg        string      `json:"network_wg"`
+	NetworkMode      string      `json:"network_mode"`
+	NetworkStart     string      `json:"network_start"`
+	NetworkEnd       string      `json:"network_end"`
+	RestrictRoutes   bool        `json:"restrict_routes"`
+	Wg               bool        `json:"wg"`
+	Ipv6             bool        `json:"ipv6"`
+	Ipv6Firewall     bool        `json:"ipv6_firewall"`
+	BindAddress      string      `json:"bind_address"`
+	Protocol         string      `json:"protocol"`
+	Port             int         `json:"port"`
+	PortWg           int         `json:"port_wg"`
+	DhParamBits      int         `json:"dh_param_bits"`
+	Groups           []string    `json:"groups"`
+	MultiDevice      bool        `json:"multi_device"`
+	DnsServers       []string    `json:"dns_servers"`
+	SearchDomain     string      `json:"search_domain"`
+	InterClient      bool        `json:"inter_client"`
+	PingInterval     int         `json:"ping_interval"`
+	PingTimeout      int         `json:"ping_timeout"`
+	LinkPingInterval int         `json:"link_ping_interval"`
+	LinkPingTimeout  int         `json:"link_ping_timeout"`
+	InactiveTimeout  int         `json:"inactive_timeout"`
+	SessionTimeout   int         `json:"session_timeout"`
+	AllowedDevices   string      `json:"allowed_devices"`
+	MaxClients       int         `json:"max_clients"`
+	MaxDevices       int         `json:"max_devices"`
+	ReplicaCount     int         `json:"replica_count"`
+	Vxlan            bool        `json:"vxlan"`
+	DnsMapping       bool        `json:"dns_mapping"`
+	Debug            bool        `json:"debug"`
+	OtpAuth          bool        `json:"otp_auth"`
+	LzoCompression   bool        `json:"lzo_compression"`
+	Cipher           string      `json:"cipher"`
+	Hash             string      `json:"hash"`
+	BlockOutsideDns  bool        `json:"block_outside_dns"`
+	JumboFrames      bool        `json:"jumbo_frames"`
+	PreConnectMsg    string      `json:"pre_connect_msg"`
+	Policy           string      `json:"policy"`
+	MssFix           interface{} `json:"mss_fix"`
 }
 
 func serverPost(c *gin.Context) {
 	data := &serverPostPutData{}
+
+	switch data.MssFix.(type) {
+	case string, int:
+	default:
+		data.MssFix = nil
+	}
 
 	req := &request.Request{
 		Method: "POST",
@@ -88,6 +94,12 @@ func serverPost(c *gin.Context) {
 func serverPut(c *gin.Context) {
 	serverId := c.Params.ByName("server_id")
 	data := &serverPostPutData{}
+
+	switch data.MssFix.(type) {
+	case string, int:
+	default:
+		data.MssFix = nil
+	}
 
 	req := &request.Request{
 		Method: "PUT",
