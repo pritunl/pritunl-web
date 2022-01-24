@@ -251,6 +251,7 @@ type linkLocationHostPostData struct {
 	Name          string `json:"name"`
 	Timeout       int    `json:"timeout"`
 	Priority      int    `json:"priority"`
+	Backoff       int    `json:"backoff"`
 	Static        bool   `json:"static"`
 	PublicAddress string `json:"public_address"`
 	LocalAddress  string `json:"local_address"`
@@ -275,6 +276,7 @@ type linkLocationHostPutData struct {
 	Name          string `json:"name"`
 	Timeout       int    `json:"timeout"`
 	Priority      int    `json:"priority"`
+	Backoff       int    `json:"backoff"`
 	Static        bool   `json:"static"`
 	PublicAddress string `json:"public_address"`
 	LocalAddress  string `json:"local_address"`
