@@ -24,14 +24,15 @@ func linkGet(c *gin.Context) {
 }
 
 type linkPostData struct {
-	Name         string `json:"name"`
-	Type         string `json:"type"`
-	Status       string `json:"status"`
-	Ipv6         bool   `json:"ipv6"`
-	HostCheck    bool   `json:"host_check"`
-	Action       string `json:"action"`
-	PreferredIke string `json:"preferred_ike"`
-	PreferredEsp string `json:"preferred_esp"`
+	Name           string `json:"name"`
+	Type           string `json:"type"`
+	Status         string `json:"status"`
+	Ipv6           bool   `json:"ipv6"`
+	HostCheck      bool   `json:"host_check"`
+	Action         string `json:"action"`
+	PreferredIke   string `json:"preferred_ike"`
+	PreferredEsp   string `json:"preferred_esp"`
+	ForcePreferred bool   `json:"force_preferred"`
 }
 
 func linkPost(c *gin.Context) {
@@ -47,14 +48,15 @@ func linkPost(c *gin.Context) {
 }
 
 type linkPutData struct {
-	Name         string `json:"name"`
-	Status       string `json:"status"`
-	Key          bool   `json:"key"`
-	Ipv6         bool   `json:"ipv6"`
-	HostCheck    bool   `json:"host_check"`
-	Action       string `json:"action"`
-	PreferredIke string `json:"preferred_ike"`
-	PreferredEsp string `json:"preferred_esp"`
+	Name           string `json:"name"`
+	Status         string `json:"status"`
+	Key            bool   `json:"key"`
+	Ipv6           bool   `json:"ipv6"`
+	HostCheck      bool   `json:"host_check"`
+	Action         string `json:"action"`
+	PreferredIke   string `json:"preferred_ike"`
+	PreferredEsp   string `json:"preferred_esp"`
+	ForcePreferred bool   `json:"force_preferred"`
 }
 
 type linkStateHostData struct {
