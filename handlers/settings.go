@@ -69,6 +69,7 @@ type settingsPutData struct {
 	SsoClientCache        bool     `json:"sso_client_cache"`
 	RestrictImport        bool     `json:"restrict_import"`
 	ClientReconnect       bool     `json:"client_reconnect"`
+	DropPermissions       bool     `json:"drop_permissions"`
 	Theme                 string   `json:"theme"`
 	PublicAddress         string   `json:"public_address"`
 	PublicAddress6        string   `json:"public_address6"`
