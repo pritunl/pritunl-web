@@ -15,6 +15,11 @@ func usersGet(c *gin.Context) {
 		query["page"] = page
 	}
 
+	lastActive := c.Query("last_active")
+	if lastActive != "" {
+		query["last_active"] = lastActive
+	}
+
 	search := c.Query("search")
 	if search != "" {
 		query["search"] = search
