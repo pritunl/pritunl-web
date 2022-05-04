@@ -9,11 +9,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/constants"
 	"github.com/pritunl/pritunl-web/handlers"
 	"github.com/pritunl/pritunl-web/request"
+	"github.com/sirupsen/logrus"
 )
 
 func ParseRemoteAddr(remoteAddr string) (addr string) {
@@ -129,6 +129,17 @@ func main() {
 		server.TLSConfig = &tls.Config{
 			MinVersion: tls.VersionTLS12,
 			MaxVersion: tls.VersionTLS13,
+			CipherSuites: []uint16{
+				tls.TLS_AES_128_GCM_SHA256,                        // 0x1301
+				tls.TLS_AES_256_GCM_SHA384,                        // 0x1302
+				tls.TLS_CHACHA20_POLY1305_SHA256,                  // 0x1303
+				tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,       // 0xc02b
+				tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,         // 0xc02f
+				tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,       // 0xc02c
+				tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,         // 0xc030
+				tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256, // 0xcca9
+				tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,   //  0xcca8
+			},
 		}
 
 		err = server.ListenAndServeTLS(
