@@ -141,6 +141,28 @@ func keyWgPost(c *gin.Context) {
 	req.Do(c)
 }
 
+type keyOvpnPostData struct {
+	Data      string `json:"data"`
+	Nonce     string `json:"nonce"`
+	PublicKey string `json:"public_key"`
+	Signature string `json:"signature"`
+}
+
+func keyOvpnPost(c *gin.Context) {
+	orgId := c.Params.ByName("org_id")
+	userId := c.Params.ByName("user_id")
+	serverId := c.Params.ByName("server_id")
+	data := &keyOvpnPostData{}
+
+	req := &request.Request{
+		Method: "POST",
+		Path:   "/key/ovpn/" + orgId + "/" + userId + "/" + serverId,
+		Json:   data,
+	}
+
+	req.Do(c)
+}
+
 type ssoAuthenticatePostData struct {
 	Username string `json:"username"`
 }
