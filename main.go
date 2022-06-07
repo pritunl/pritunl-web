@@ -122,6 +122,7 @@ func main() {
 		ReadHeaderTimeout: 30 * time.Second,
 		WriteTimeout:      2 * time.Minute,
 		IdleTimeout:       1 * time.Minute,
+		MaxHeaderBytes:    8192,
 	}
 
 	var err error
