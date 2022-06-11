@@ -39,6 +39,7 @@ type serverPostPutData struct {
 	Wg               bool        `json:"wg"`
 	Ipv6             bool        `json:"ipv6"`
 	Ipv6Firewall     bool        `json:"ipv6_firewall"`
+	DynamicFirewall  bool        `json:"dynamic_firewall"`
 	BindAddress      string      `json:"bind_address"`
 	Protocol         string      `json:"protocol"`
 	Port             int         `json:"port"`
