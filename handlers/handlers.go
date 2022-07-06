@@ -5,12 +5,12 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/constants"
 	"github.com/pritunl/pritunl-web/errortypes"
 	"github.com/pritunl/pritunl-web/utils"
+	"github.com/sirupsen/logrus"
 )
 
 func Limiter(c *gin.Context) {
