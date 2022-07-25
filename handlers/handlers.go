@@ -149,6 +149,8 @@ func Register(engine *gin.Engine) {
 	engine.GET("/ping", pingGet)
 	engine.GET("/check", checkGet)
 
+	engine.GET("robots.txt", robotsGet)
+
 	engine.GET("/server", serverGet)
 	engine.GET("/server/:server_id", serverGet)
 	engine.POST("/server", serverPost)
