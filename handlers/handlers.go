@@ -149,7 +149,7 @@ func Register(engine *gin.Engine) {
 	engine.GET("/ping", pingGet)
 	engine.GET("/check", checkGet)
 
-	engine.GET("robots.txt", robotsGet)
+	engine.GET("/robots.txt", robotsGet)
 
 	engine.GET("/server", serverGet)
 	engine.GET("/server/:server_id", serverGet)
@@ -196,7 +196,6 @@ func Register(engine *gin.Engine) {
 	engine.GET("/fredoka-one.woff", fredokaWoffStaticGet)
 	engine.GET("/ubuntu-bold.woff", ubuntuWoffStaticGet)
 	engine.GET("/logo.png", logoStaticGet)
-	engine.GET("/robots.txt", robotsStaticGet)
 	engine.GET("/", rootGet)
 	engine.GET("/login", loginGet)
 

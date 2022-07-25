@@ -65,15 +65,6 @@ func logoStaticGet(c *gin.Context) {
 	req.Do(c)
 }
 
-func robotsStaticGet(c *gin.Context) {
-	req := &request.Request{
-		Method: "GET",
-		Path:   "/robots.txt",
-	}
-
-	req.Do(c)
-}
-
 func rootGet(c *gin.Context) {
 	req := &request.Request{
 		Method: "GET",
