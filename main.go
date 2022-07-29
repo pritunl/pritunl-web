@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"net/http"
@@ -127,6 +128,30 @@ func main() {
 
 	var err error
 	if constants.Ssl {
+		sslCertByt, e := base64.StdEncoding.DecodeString(constants.SslCert)
+		if e != nil {
+			logrus.WithFields(logrus.Fields{
+				"error": e,
+			}).Error("main: Server cert decode error")
+			panic(e)
+		}
+
+		sslKeyByt, e := base64.StdEncoding.DecodeString(constants.SslKey)
+		if e != nil {
+			logrus.WithFields(logrus.Fields{
+				"error": e,
+			}).Error("main: Server key decode error")
+			panic(e)
+		}
+
+		tlsCert, e := tls.X509KeyPair(sslCertByt, sslKeyByt)
+		if e != nil {
+			logrus.WithFields(logrus.Fields{
+				"error": e,
+			}).Error("main: Server tls decode error")
+			panic(e)
+		}
+
 		server.TLSConfig = &tls.Config{
 			MinVersion: tls.VersionTLS12,
 			MaxVersion: tls.VersionTLS13,
@@ -141,12 +166,12 @@ func main() {
 				tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256, // 0xcca9
 				tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,   // 0xcca8
 			},
+			Certificates: []tls.Certificate{
+				tlsCert,
+			},
 		}
 
-		err = server.ListenAndServeTLS(
-			constants.CertPath,
-			constants.KeyPath,
-		)
+		err = server.ListenAndServeTLS("", "")
 	} else {
 		err = server.ListenAndServe()
 	}

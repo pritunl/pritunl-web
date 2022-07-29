@@ -11,14 +11,14 @@ var (
 	BindHost                = os.Getenv("BIND_HOST")
 	BindPort                = os.Getenv("BIND_PORT")
 	InternalHost            = os.Getenv("INTERNAL_ADDRESS")
-	CertPath                = os.Getenv("CERT_PATH")
-	KeyPath                 = os.Getenv("KEY_PATH")
+	SslCert                 = os.Getenv("SSL_CERT")
+	SslKey                  = os.Getenv("SSL_KEY")
 	Ssl                     bool
 	Scheme                  string
 )
 
 func init() {
-	Ssl = CertPath != "" && KeyPath != ""
+	Ssl = SslCert != "" && SslKey != ""
 	if Ssl {
 		Scheme = "https"
 	} else {
