@@ -63,6 +63,7 @@ type serverPostPutData struct {
 	Vxlan            bool        `json:"vxlan"`
 	DnsMapping       bool        `json:"dns_mapping"`
 	Debug            bool        `json:"debug"`
+	SsoAuth          bool        `json:"sso_auth"`
 	OtpAuth          bool        `json:"otp_auth"`
 	LzoCompression   bool        `json:"lzo_compression"`
 	Cipher           string      `json:"cipher"`
