@@ -32,6 +32,10 @@ func keyGet(c *gin.Context) {
 		Path:   path,
 	}
 
+	if param1 == "request" || param1 == "callback" {
+		req.RawQuery = c.Request.URL.RawQuery
+	}
+
 	req.Do(c)
 }
 
@@ -163,6 +167,50 @@ func keyOvpnPost(c *gin.Context) {
 	req.Do(c)
 }
 
+type keyOvpnWaitPostData struct {
+	Data      string `json:"data"`
+	Nonce     string `json:"nonce"`
+	PublicKey string `json:"public_key"`
+	Signature string `json:"signature"`
+}
+
+func keyOvpnWaitPost(c *gin.Context) {
+	orgId := c.Params.ByName("org_id")
+	userId := c.Params.ByName("user_id")
+	serverId := c.Params.ByName("server_id")
+	data := &keyOvpnWaitPostData{}
+
+	req := &request.Request{
+		Method: "POST",
+		Path:   "/key/ovpn_wait/" + orgId + "/" + userId + "/" + serverId,
+		Json:   data,
+	}
+
+	req.Do(c)
+}
+
+type keyWgWaitPostData struct {
+	Data      string `json:"data"`
+	Nonce     string `json:"nonce"`
+	PublicKey string `json:"public_key"`
+	Signature string `json:"signature"`
+}
+
+func keyWgWaitPost(c *gin.Context) {
+	orgId := c.Params.ByName("org_id")
+	userId := c.Params.ByName("user_id")
+	serverId := c.Params.ByName("server_id")
+	data := &keyWgWaitPostData{}
+
+	req := &request.Request{
+		Method: "POST",
+		Path:   "/key/wg_wait/" + orgId + "/" + userId + "/" + serverId,
+		Json:   data,
+	}
+
+	req.Do(c)
+}
+
 type ssoAuthenticatePostData struct {
 	Username string `json:"username"`
 }
@@ -226,6 +274,40 @@ func ssoYubicoPost(c *gin.Context) {
 	req := &request.Request{
 		Method: "POST",
 		Path:   "/sso/yubico",
+		Json:   data,
+	}
+
+	req.Do(c)
+}
+
+type keyDuoPostData struct {
+	Token    string `json:"token"`
+	Passcode string `json:"passcode"`
+}
+
+func keyDuoPost(c *gin.Context) {
+	data := &keyDuoPostData{}
+
+	req := &request.Request{
+		Method: "POST",
+		Path:   "/key/duo",
+		Json:   data,
+	}
+
+	req.Do(c)
+}
+
+type keyYubicoPostData struct {
+	Token string `json:"token"`
+	Key   string `json:"key"`
+}
+
+func keyYubicoPost(c *gin.Context) {
+	data := &keyYubicoPostData{}
+
+	req := &request.Request{
+		Method: "POST",
+		Path:   "/key/yubico",
 		Json:   data,
 	}
 
