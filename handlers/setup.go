@@ -84,3 +84,12 @@ func setupUpgradeGet(c *gin.Context) {
 
 	req.Do(c)
 }
+
+func successGet(c *gin.Context) {
+	req := &request.Request{
+		Method: "GET",
+		Path:   "/success",
+	}
+
+	req.Do(c)
+}

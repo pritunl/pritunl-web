@@ -195,6 +195,7 @@ func Register(engine *gin.Engine) {
 	engine.GET("/setup/s/ubuntu-bold.woff", setupUbuntuWoffStaticGet)
 	engine.PUT("/setup/mongodb", setupMongoPut)
 	engine.GET("/setup/upgrade", setupUpgradeGet)
+	engine.GET("/success", successGet)
 
 	engine.GET("/s/*path", staticPathGet)
 	engine.GET("/fredoka-one.eot", fredokaEotStaticGet)
