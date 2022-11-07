@@ -66,7 +66,7 @@ type settingsPutData struct {
 	SsoOneloginMode       string   `json:"sso_onelogin_mode"`
 	SsoJumpCloudAppId     string   `json:"sso_jumpcloud_app_id"`
 	SsoJumpCloudSecret    string   `json:"sso_jumpcloud_secret"`
-	ServerSsoUrl          string   `json:"server_ssl_url"`
+	ServerSsoUrl          string   `json:"server_sso_url"`
 	Ipv6                  bool     `json:"ipv6"`
 	SsoCache              bool     `json:"sso_cache"`
 	SsoClientCache        bool     `json:"sso_client_cache"`
