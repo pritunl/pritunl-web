@@ -10,4 +10,4 @@ Thumbs.db
 *.egg
 *.egg-info
 .sass-cache
-/pritunl-dns
+/pritunl-web
