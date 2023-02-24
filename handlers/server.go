@@ -73,6 +73,7 @@ type serverPostPutData struct {
 	PreConnectMsg    string      `json:"pre_connect_msg"`
 	Policy           string      `json:"policy"`
 	MssFix           interface{} `json:"mss_fix"`
+	Multihome        bool        `json:"multihome"`
 }
 
 func serverPost(c *gin.Context) {
