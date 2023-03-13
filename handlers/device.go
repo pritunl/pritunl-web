@@ -16,8 +16,8 @@ func deviceUnregisteredGet(c *gin.Context) {
 }
 
 type deviceRegisterPutData struct {
-	DeviceName   string `json:"device_name"`
-	DeviceRegKey string `json:"device_reg_key"`
+	DeviceName string `json:"device_name"`
+	RegKey     string `json:"reg_key"`
 }
 
 func deviceRegisterPut(c *gin.Context) {
