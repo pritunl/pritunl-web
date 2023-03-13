@@ -3,14 +3,15 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/request"
+	"github.com/pritunl/pritunl-web/utils"
 )
 
 func keyGet(c *gin.Context) {
-	param1 := c.Params.ByName("param1")
-	param2 := c.Params.ByName("param2")
-	param3 := c.Params.ByName("param3")
-	param4 := c.Params.ByName("param4")
-	param5 := c.Params.ByName("param5")
+	param1 := utils.FilterStr(c.Params.ByName("param1"), 128)
+	param2 := utils.FilterStr(c.Params.ByName("param2"), 128)
+	param3 := utils.FilterStr(c.Params.ByName("param3"), 128)
+	param4 := utils.FilterStr(c.Params.ByName("param4"), 128)
+	param5 := utils.FilterStr(c.Params.ByName("param5"), 128)
 
 	path := "/key/" + param1
 
@@ -40,8 +41,8 @@ func keyGet(c *gin.Context) {
 }
 
 func keyOncGet(c *gin.Context) {
-	param1 := c.Params.ByName("param1")
-	param2 := c.Params.ByName("param2")
+	param1 := utils.FilterStr(c.Params.ByName("param1"), 128)
+	param2 := utils.FilterStr(c.Params.ByName("param2"), 128)
 
 	path := "/key_onc/" + param1
 
@@ -63,7 +64,7 @@ type userKeyPinPutData struct {
 }
 
 func keyPinPut(c *gin.Context) {
-	keyId := c.Params.ByName("key_id")
+	keyId := utils.FilterStr(c.Params.ByName("key_id"), 128)
 	data := &userKeyPinPutData{}
 
 	req := &request.Request{
@@ -76,7 +77,7 @@ func keyPinPut(c *gin.Context) {
 }
 
 func keyShortGet(c *gin.Context) {
-	shortCode := c.Params.ByName("short_code")
+	shortCode := utils.FilterStr(c.Params.ByName("short_code"), 128)
 
 	req := &request.Request{
 		Method: "GET",
@@ -87,7 +88,7 @@ func keyShortGet(c *gin.Context) {
 }
 
 func keyShortDelete(c *gin.Context) {
-	shortCode := c.Params.ByName("short_code")
+	shortCode := utils.FilterStr(c.Params.ByName("short_code"), 128)
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -98,7 +99,7 @@ func keyShortDelete(c *gin.Context) {
 }
 
 func keyApiShortGet(c *gin.Context) {
-	shortCode := c.Params.ByName("short_code")
+	shortCode := utils.FilterStr(c.Params.ByName("short_code"), 128)
 
 	req := &request.Request{
 		Method: "GET",
@@ -109,16 +110,17 @@ func keyApiShortGet(c *gin.Context) {
 }
 
 type keyWgPutPostData struct {
-	Data      string `json:"data"`
-	Nonce     string `json:"nonce"`
-	PublicKey string `json:"public_key"`
-	Signature string `json:"signature"`
+	Data            string `json:"data"`
+	Nonce           string `json:"nonce"`
+	PublicKey       string `json:"public_key"`
+	Signature       string `json:"signature"`
+	DeviceSignature string `json:"device_signature"`
 }
 
 func keyWgPut(c *gin.Context) {
-	orgId := c.Params.ByName("org_id")
-	userId := c.Params.ByName("user_id")
-	serverId := c.Params.ByName("server_id")
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
+	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
 	data := &keyWgPutPostData{}
 
 	req := &request.Request{
@@ -131,9 +133,9 @@ func keyWgPut(c *gin.Context) {
 }
 
 func keyWgPost(c *gin.Context) {
-	orgId := c.Params.ByName("org_id")
-	userId := c.Params.ByName("user_id")
-	serverId := c.Params.ByName("server_id")
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
+	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
 	data := &keyWgPutPostData{}
 
 	req := &request.Request{
@@ -146,16 +148,17 @@ func keyWgPost(c *gin.Context) {
 }
 
 type keyOvpnPostData struct {
-	Data      string `json:"data"`
-	Nonce     string `json:"nonce"`
-	PublicKey string `json:"public_key"`
-	Signature string `json:"signature"`
+	Data            string `json:"data"`
+	Nonce           string `json:"nonce"`
+	PublicKey       string `json:"public_key"`
+	Signature       string `json:"signature"`
+	DeviceSignature string `json:"device_signature"`
 }
 
 func keyOvpnPost(c *gin.Context) {
-	orgId := c.Params.ByName("org_id")
-	userId := c.Params.ByName("user_id")
-	serverId := c.Params.ByName("server_id")
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
+	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
 	data := &keyOvpnPostData{}
 
 	req := &request.Request{
@@ -168,16 +171,17 @@ func keyOvpnPost(c *gin.Context) {
 }
 
 type keyOvpnWaitPostData struct {
-	Data      string `json:"data"`
-	Nonce     string `json:"nonce"`
-	PublicKey string `json:"public_key"`
-	Signature string `json:"signature"`
+	Data            string `json:"data"`
+	Nonce           string `json:"nonce"`
+	PublicKey       string `json:"public_key"`
+	Signature       string `json:"signature"`
+	DeviceSignature string `json:"device_signature"`
 }
 
 func keyOvpnWaitPost(c *gin.Context) {
-	orgId := c.Params.ByName("org_id")
-	userId := c.Params.ByName("user_id")
-	serverId := c.Params.ByName("server_id")
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
+	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
 	data := &keyOvpnWaitPostData{}
 
 	req := &request.Request{
@@ -190,16 +194,17 @@ func keyOvpnWaitPost(c *gin.Context) {
 }
 
 type keyWgWaitPostData struct {
-	Data      string `json:"data"`
-	Nonce     string `json:"nonce"`
-	PublicKey string `json:"public_key"`
-	Signature string `json:"signature"`
+	Data            string `json:"data"`
+	Nonce           string `json:"nonce"`
+	PublicKey       string `json:"public_key"`
+	Signature       string `json:"signature"`
+	DeviceSignature string `json:"device_signature"`
 }
 
 func keyWgWaitPost(c *gin.Context) {
-	orgId := c.Params.ByName("org_id")
-	userId := c.Params.ByName("user_id")
-	serverId := c.Params.ByName("server_id")
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
+	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
 	data := &keyWgWaitPostData{}
 
 	req := &request.Request{

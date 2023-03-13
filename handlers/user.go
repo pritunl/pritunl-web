@@ -3,10 +3,11 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/request"
+	"github.com/pritunl/pritunl-web/utils"
 )
 
 func usersGet(c *gin.Context) {
-	orgId := c.Params.ByName("org_id")
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
 
 	query := map[string]string{}
 
@@ -40,8 +41,8 @@ func usersGet(c *gin.Context) {
 }
 
 func userGet(c *gin.Context) {
-	orgId := c.Params.ByName("org_id")
-	userId := c.Params.ByName("user_id")
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
+	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
 
 	req := &request.Request{
 		Method: "GET",
@@ -75,7 +76,7 @@ type userPostData struct {
 }
 
 func userPost(c *gin.Context) {
-	orgId := c.Params.ByName("org_id")
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
 	data := &userPostData{}
 
 	req := &request.Request{
@@ -88,7 +89,7 @@ func userPost(c *gin.Context) {
 }
 
 func userMultiPost(c *gin.Context) {
-	orgId := c.Params.ByName("org_id")
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
 	data := []*userPostData{}
 
 	req := &request.Request{
@@ -119,8 +120,8 @@ type userPutData struct {
 }
 
 func userPut(c *gin.Context) {
-	orgId := c.Params.ByName("org_id")
-	userId := c.Params.ByName("user_id")
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
+	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
 	data := &userPutData{}
 
 	switch data.Pin.(type) {
@@ -139,8 +140,8 @@ func userPut(c *gin.Context) {
 }
 
 func userDelete(c *gin.Context) {
-	orgId := c.Params.ByName("org_id")
-	userId := c.Params.ByName("user_id")
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
+	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -151,8 +152,8 @@ func userDelete(c *gin.Context) {
 }
 
 func userOtpSecretPut(c *gin.Context) {
-	orgId := c.Params.ByName("org_id")
-	userId := c.Params.ByName("user_id")
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
+	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
 
 	req := &request.Request{
 		Method: "PUT",
@@ -163,8 +164,8 @@ func userOtpSecretPut(c *gin.Context) {
 }
 
 func userAuditGet(c *gin.Context) {
-	orgId := c.Params.ByName("org_id")
-	userId := c.Params.ByName("user_id")
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
+	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
 
 	req := &request.Request{
 		Method: "GET",

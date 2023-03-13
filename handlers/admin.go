@@ -3,10 +3,11 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/request"
+	"github.com/pritunl/pritunl-web/utils"
 )
 
 func adminGet(c *gin.Context) {
-	adminId := c.Params.ByName("admin_id")
+	adminId := utils.FilterStr(c.Params.ByName("admin_id"), 128)
 	if adminId != "" {
 		adminId = "/" + adminId
 	}
@@ -33,7 +34,7 @@ type adminPutData struct {
 }
 
 func adminPut(c *gin.Context) {
-	adminId := c.Params.ByName("admin_id")
+	adminId := utils.FilterStr(c.Params.ByName("admin_id"), 128)
 	data := &adminPutData{}
 
 	req := &request.Request{
@@ -68,7 +69,7 @@ func adminPost(c *gin.Context) {
 }
 
 func adminDelete(c *gin.Context) {
-	adminId := c.Params.ByName("admin_id")
+	adminId := utils.FilterStr(c.Params.ByName("admin_id"), 128)
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -79,7 +80,7 @@ func adminDelete(c *gin.Context) {
 }
 
 func adminAuditGet(c *gin.Context) {
-	adminId := c.Params.ByName("admin_id")
+	adminId := utils.FilterStr(c.Params.ByName("admin_id"), 128)
 
 	req := &request.Request{
 		Method: "GET",

@@ -3,10 +3,11 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/request"
+	"github.com/pritunl/pritunl-web/utils"
 )
 
 func serverGet(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
 	if serverId != "" {
 		serverId = "/" + serverId
 	}
@@ -95,7 +96,7 @@ func serverPost(c *gin.Context) {
 }
 
 func serverPut(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
 	data := &serverPostPutData{}
 
 	switch data.MssFix.(type) {
@@ -114,7 +115,7 @@ func serverPut(c *gin.Context) {
 }
 
 func serverDelete(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -125,7 +126,7 @@ func serverDelete(c *gin.Context) {
 }
 
 func serverOrgGet(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
 
 	req := &request.Request{
 		Method: "GET",
@@ -136,8 +137,8 @@ func serverOrgGet(c *gin.Context) {
 }
 
 func serverOrgPut(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
-	orgId := c.Params.ByName("org_id")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
 
 	req := &request.Request{
 		Method: "PUT",
@@ -148,8 +149,8 @@ func serverOrgPut(c *gin.Context) {
 }
 
 func serverOrgDelete(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
-	orgId := c.Params.ByName("org_id")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -160,7 +161,7 @@ func serverOrgDelete(c *gin.Context) {
 }
 
 func serverRouteGet(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
 
 	req := &request.Request{
 		Method: "GET",
@@ -184,7 +185,7 @@ type serverRoutePostPutData struct {
 }
 
 func serverRoutePost(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
 	data := &serverRoutePostPutData{}
 
 	req := &request.Request{
@@ -197,7 +198,7 @@ func serverRoutePost(c *gin.Context) {
 }
 
 func serverRoutesPost(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
 	data := []*serverRoutePostPutData{}
 
 	req := &request.Request{
@@ -210,8 +211,8 @@ func serverRoutesPost(c *gin.Context) {
 }
 
 func serverRoutePut(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
-	routeNet := c.Params.ByName("route_net")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	routeNet := utils.FilterStr(c.Params.ByName("route_net"), 128)
 	data := &serverRoutePostPutData{}
 
 	req := &request.Request{
@@ -224,8 +225,8 @@ func serverRoutePut(c *gin.Context) {
 }
 
 func serverRouteDelete(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
-	routeNet := c.Params.ByName("route_net")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	routeNet := utils.FilterStr(c.Params.ByName("route_net"), 128)
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -236,7 +237,7 @@ func serverRouteDelete(c *gin.Context) {
 }
 
 func serverHostGet(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
 
 	req := &request.Request{
 		Method: "GET",
@@ -247,8 +248,8 @@ func serverHostGet(c *gin.Context) {
 }
 
 func serverHostPut(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
-	hostId := c.Params.ByName("host_id")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	hostId := utils.FilterStr(c.Params.ByName("host_id"), 128)
 
 	req := &request.Request{
 		Method: "PUT",
@@ -259,8 +260,8 @@ func serverHostPut(c *gin.Context) {
 }
 
 func serverHostDelete(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
-	hostId := c.Params.ByName("host_id")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	hostId := utils.FilterStr(c.Params.ByName("host_id"), 128)
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -271,7 +272,7 @@ func serverHostDelete(c *gin.Context) {
 }
 
 func serverLinkGet(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
 
 	req := &request.Request{
 		Method: "GET",
@@ -286,8 +287,8 @@ type serverLinkPutData struct {
 }
 
 func serverLinkPut(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
-	linkId := c.Params.ByName("link_id")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
 	data := &serverLinkPutData{}
 
 	req := &request.Request{
@@ -300,8 +301,8 @@ func serverLinkPut(c *gin.Context) {
 }
 
 func serverLinkDelete(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
-	linkId := c.Params.ByName("link_id")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -312,8 +313,8 @@ func serverLinkDelete(c *gin.Context) {
 }
 
 func serverOperationPut(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
-	operation := c.Params.ByName("operation")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	operation := utils.FilterStr(c.Params.ByName("operation"), 128)
 
 	req := &request.Request{
 		Method: "PUT",
@@ -324,7 +325,7 @@ func serverOperationPut(c *gin.Context) {
 }
 
 func serverOutputGet(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
 
 	req := &request.Request{
 		Method: "GET",
@@ -335,7 +336,7 @@ func serverOutputGet(c *gin.Context) {
 }
 
 func serverOutputDelete(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -346,7 +347,7 @@ func serverOutputDelete(c *gin.Context) {
 }
 
 func serverLinkOutputGet(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
 
 	req := &request.Request{
 		Method: "GET",
@@ -357,7 +358,7 @@ func serverLinkOutputGet(c *gin.Context) {
 }
 
 func serverLinkOutputDelete(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -368,8 +369,8 @@ func serverLinkOutputDelete(c *gin.Context) {
 }
 
 func serverBandwidthGet(c *gin.Context) {
-	serverId := c.Params.ByName("server_id")
-	period := c.Params.ByName("period")
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	period := utils.FilterStr(c.Params.ByName("period"), 128)
 
 	req := &request.Request{
 		Method: "GET",

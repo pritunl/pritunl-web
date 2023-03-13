@@ -23,9 +23,9 @@ type deviceRegisterPutData struct {
 func deviceRegisterPut(c *gin.Context) {
 	data := &deviceRegisterPutData{}
 
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 64)
-	userId := utils.FilterStr(c.Params.ByName("user_id"), 64)
-	deviceId := utils.FilterStr(c.Params.ByName("device_id"), 64)
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
+	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
+	deviceId := utils.FilterStr(c.Params.ByName("device_id"), 128)
 
 	req := &request.Request{
 		Method: "PUT",
@@ -37,9 +37,9 @@ func deviceRegisterPut(c *gin.Context) {
 }
 
 func deviceRegisterDelete(c *gin.Context) {
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 64)
-	userId := utils.FilterStr(c.Params.ByName("user_id"), 64)
-	deviceId := utils.FilterStr(c.Params.ByName("device_id"), 64)
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
+	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
+	deviceId := utils.FilterStr(c.Params.ByName("device_id"), 128)
 
 	req := &request.Request{
 		Method: "DELETE",

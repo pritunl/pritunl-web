@@ -3,10 +3,11 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/request"
+	"github.com/pritunl/pritunl-web/utils"
 )
 
 func hostGet(c *gin.Context) {
-	hostId := c.Params.ByName("host_id")
+	hostId := utils.FilterStr(c.Params.ByName("host_id"), 128)
 	if hostId != "" {
 		hostId = "/" + hostId
 	}
@@ -44,7 +45,7 @@ type hostPutData struct {
 }
 
 func hostPut(c *gin.Context) {
-	hostId := c.Params.ByName("host_id")
+	hostId := utils.FilterStr(c.Params.ByName("host_id"), 128)
 	data := &hostPutData{}
 
 	req := &request.Request{
@@ -57,7 +58,7 @@ func hostPut(c *gin.Context) {
 }
 
 func hostDelete(c *gin.Context) {
-	hostId := c.Params.ByName("host_id")
+	hostId := utils.FilterStr(c.Params.ByName("host_id"), 128)
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -68,8 +69,8 @@ func hostDelete(c *gin.Context) {
 }
 
 func hostUsageGet(c *gin.Context) {
-	hostId := c.Params.ByName("host_id")
-	period := c.Params.ByName("period")
+	hostId := utils.FilterStr(c.Params.ByName("host_id"), 128)
+	period := utils.FilterStr(c.Params.ByName("period"), 128)
 
 	req := &request.Request{
 		Method: "GET",

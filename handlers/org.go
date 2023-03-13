@@ -3,10 +3,11 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/request"
+	"github.com/pritunl/pritunl-web/utils"
 )
 
 func orgGet(c *gin.Context) {
-	orgId := c.Params.ByName("org_id")
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
 	if orgId != "" {
 		orgId = "/" + orgId
 	}
@@ -53,7 +54,7 @@ type orgPutData struct {
 }
 
 func orgPut(c *gin.Context) {
-	orgId := c.Params.ByName("org_id")
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
 	data := &orgPutData{}
 
 	req := &request.Request{
@@ -66,7 +67,7 @@ func orgPut(c *gin.Context) {
 }
 
 func orgDelete(c *gin.Context) {
-	orgId := c.Params.ByName("org_id")
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
 
 	req := &request.Request{
 		Method: "DELETE",
