@@ -176,8 +176,8 @@ func userAuditGet(c *gin.Context) {
 }
 
 type userDevicePutData struct {
-	DeviceName   string `json:"device_name"`
-	DeviceRegKey string `json:"device_reg_key"`
+	Name   string `json:"name"`
+	RegKey string `json:"reg_key"`
 }
 
 func userDevicePut(c *gin.Context) {
