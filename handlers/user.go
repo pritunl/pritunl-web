@@ -174,3 +174,37 @@ func userAuditGet(c *gin.Context) {
 
 	req.Do(c)
 }
+
+type userDevicePutData struct {
+	DeviceName   string `json:"device_name"`
+	DeviceRegKey string `json:"device_reg_key"`
+}
+
+func userDevicePut(c *gin.Context) {
+	data := &userDevicePutData{}
+
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
+	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
+	deviceId := utils.FilterStr(c.Params.ByName("device_id"), 128)
+
+	req := &request.Request{
+		Method: "PUT",
+		Path:   "/user/" + orgId + "/" + userId + "/device/" + deviceId,
+		Json:   data,
+	}
+
+	req.Do(c)
+}
+
+func userDeviceDelete(c *gin.Context) {
+	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
+	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
+	deviceId := utils.FilterStr(c.Params.ByName("device_id"), 128)
+
+	req := &request.Request{
+		Method: "DELETE",
+		Path:   "/user/" + orgId + "/" + userId + "/device/" + deviceId,
+	}
+
+	req.Do(c)
+}
