@@ -78,6 +78,12 @@ func Register(engine *gin.Engine) {
 	engine.GET("/event", eventGet)
 	engine.GET("/event/:cursor", eventGet)
 
+	engine.GET("/device/unregistered", deviceUnregisteredGet)
+	engine.PUT("/device/register/:org_id/:user_id/:device_id",
+		deviceRegisterPut)
+	engine.DELETE("/device/register/:org_id/:user_id/:device_id",
+		deviceRegisterDelete)
+
 	engine.GET("/host", hostGet)
 	engine.GET("/host/:host_id", hostGet)
 	engine.PUT("/host/:host_id", hostPut)
@@ -222,4 +228,7 @@ func Register(engine *gin.Engine) {
 	engine.DELETE("/user/:org_id/:user_id", userDelete)
 	engine.PUT("/user/:org_id/:user_id/otp_secret", userOtpSecretPut)
 	engine.GET("/user/:org_id/:user_id/audit", userAuditGet)
+	engine.PUT("/user/:org_id/:user_id/device/:device_id", userDevicePut)
+	engine.DELETE("/user/:org_id/:user_id/device/:device_id",
+		userDeviceDelete)
 }
