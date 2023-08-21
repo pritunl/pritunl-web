@@ -64,6 +64,7 @@ type serverPostPutData struct {
 	ReplicaCount     int         `json:"replica_count"`
 	Vxlan            bool        `json:"vxlan"`
 	DnsMapping       bool        `json:"dns_mapping"`
+	RouteDns         bool        `json:"route_dns"`
 	Debug            bool        `json:"debug"`
 	SsoAuth          bool        `json:"sso_auth"`
 	OtpAuth          bool        `json:"otp_auth"`
