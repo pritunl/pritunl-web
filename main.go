@@ -35,6 +35,10 @@ func copyHeader(dst, src http.Header) {
 func main() {
 	if constants.RedirectServer == "true" && constants.BindPort != "80" {
 		go func() {
+			logrus.WithFields(logrus.Fields{
+				"port": 80,
+			}).Info("main: Starting HTTP server")
+
 			server := &http.Server{
 				Addr:         constants.BindHost + ":80",
 				ReadTimeout:  1 * time.Minute,
@@ -115,6 +119,10 @@ func main() {
 
 	router := gin.New()
 	handlers.Register(router)
+
+	logrus.WithFields(logrus.Fields{
+		"port": constants.BindPort,
+	}).Info("main: Starting HTTPS server")
 
 	server := &http.Server{
 		Addr:              constants.BindHost + ":" + constants.BindPort,
