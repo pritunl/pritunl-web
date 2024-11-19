@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/constants"
 	"github.com/pritunl/pritunl-web/errortypes"
+	"github.com/pritunl/tools/logger"
 )
 
 var client = &http.Client{
@@ -55,6 +56,9 @@ func (r *Request) Do(c *gin.Context) {
 			err = errortypes.RequestError{
 				errors.Wrap(err, "request: Json marshal error"),
 			}
+			logger.WithFields(logger.Fields{
+				"error": err,
+			}).Error("request: Request error")
 			c.AbortWithError(521, err)
 			return
 		}
@@ -67,6 +71,9 @@ func (r *Request) Do(c *gin.Context) {
 		err = errortypes.RequestError{
 			errors.Wrap(err, "request: Create request failed"),
 		}
+		logger.WithFields(logger.Fields{
+			"error": err,
+		}).Error("request: Request error")
 		c.AbortWithError(522, err)
 		return
 	}
@@ -119,6 +126,9 @@ func (r *Request) Do(c *gin.Context) {
 		err = errortypes.RequestError{
 			errors.Wrap(err, "request: Request failed"),
 		}
+		logger.WithFields(logger.Fields{
+			"error": err,
+		}).Error("request: Request error")
 		c.AbortWithError(502, err)
 		return
 	}
@@ -142,6 +152,9 @@ func DoCheck(w http.ResponseWriter, r *http.Request) {
 		err = errortypes.RequestError{
 			errors.Wrap(err, "request: Create request failed"),
 		}
+		logger.WithFields(logger.Fields{
+			"error": err,
+		}).Error("request: Request error")
 		WriteError(w, 525, err)
 		return
 	}
@@ -161,6 +174,9 @@ func DoCheck(w http.ResponseWriter, r *http.Request) {
 		err = errortypes.RequestError{
 			errors.Wrap(err, "request: Request failed"),
 		}
+		logger.WithFields(logger.Fields{
+			"error": err,
+		}).Error("request: Request error")
 		WriteError(w, 502, err)
 		return
 	}

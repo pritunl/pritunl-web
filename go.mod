@@ -7,6 +7,7 @@ toolchain go1.23.1
 require (
 	github.com/dropbox/godropbox v0.0.0-20230623171840-436d2007a9fd
 	github.com/gin-gonic/gin v1.10.0
+	github.com/pritunl/tools v1.2.0
 	github.com/sirupsen/logrus v1.9.3
 )
 
