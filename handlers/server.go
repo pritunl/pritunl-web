@@ -56,6 +56,8 @@ type serverPostPutData struct {
 	InterClient      bool        `json:"inter_client"`
 	PingInterval     int         `json:"ping_interval"`
 	PingTimeout      int         `json:"ping_timeout"`
+	PingIntervalWg   int         `json:"ping_interval_wg"`
+	PingTimeoutWg    int         `json:"ping_timeout_wg"`
 	LinkPingInterval int         `json:"link_ping_interval"`
 	LinkPingTimeout  int         `json:"link_ping_timeout"`
 	InactiveTimeout  int         `json:"inactive_timeout"`
