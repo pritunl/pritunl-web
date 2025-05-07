@@ -28,6 +28,7 @@ type linkPostData struct {
 	Name           string `json:"name"`
 	Type           string `json:"type"`
 	Status         string `json:"status"`
+	Protocol       string `json:"protocol"`
 	Ipv6           bool   `json:"ipv6"`
 	HostCheck      bool   `json:"host_check"`
 	Action         string `json:"action"`
@@ -51,6 +52,7 @@ func linkPost(c *gin.Context) {
 type linkPutData struct {
 	Name           string `json:"name"`
 	Status         string `json:"status"`
+	Protocol       string `json:"protocol"`
 	Key            bool   `json:"key"`
 	Ipv6           bool   `json:"ipv6"`
 	HostCheck      bool   `json:"host_check"`
@@ -71,6 +73,7 @@ type linkStatePutData struct {
 	LocalAddress  string                       `json:"local_address"`
 	Address6      string                       `json:"address6"`
 	Provider      string                       `json:"provider"`
+	WgPublicKey   string                       `json:"wg_public_key"`
 	Status        map[string]string            `json:"status"`
 	Hosts         map[string]linkStateHostData `json:"hosts"`
 	Errors        []string                     `json:"errors"`
@@ -263,6 +266,7 @@ type linkLocationHostPostData struct {
 	PublicAddress string `json:"public_address"`
 	LocalAddress  string `json:"local_address"`
 	Address6      string `json:"address6"`
+	WgPublicKey   string `json:"wg_public_key"`
 }
 
 func linkLocationHostPost(c *gin.Context) {
@@ -288,6 +292,7 @@ type linkLocationHostPutData struct {
 	PublicAddress string `json:"public_address"`
 	LocalAddress  string `json:"local_address"`
 	Address6      string `json:"address6"`
+	WgPublicKey   string `json:"wg_public_key"`
 }
 
 func linkLocationHostPut(c *gin.Context) {
