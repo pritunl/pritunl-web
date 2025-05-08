@@ -29,6 +29,7 @@ type linkPostData struct {
 	Type           string `json:"type"`
 	Status         string `json:"status"`
 	Protocol       string `json:"protocol"`
+	WgPort         int    `json:"wg_port"`
 	Ipv6           bool   `json:"ipv6"`
 	HostCheck      bool   `json:"host_check"`
 	Action         string `json:"action"`
@@ -53,6 +54,7 @@ type linkPutData struct {
 	Name           string `json:"name"`
 	Status         string `json:"status"`
 	Protocol       string `json:"protocol"`
+	WgPort         int    `json:"wg_port"`
 	Key            bool   `json:"key"`
 	Ipv6           bool   `json:"ipv6"`
 	HostCheck      bool   `json:"host_check"`
