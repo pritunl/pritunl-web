@@ -41,6 +41,7 @@ type hostPutData struct {
 	LinkAddress       string `json:"link_address"`
 	SyncAddress       string `json:"sync_address"`
 	AvailabilityGroup string `json:"availability_group"`
+	Priority          int    `json:"priority"`
 	InstanceId        string `json:"instance_id"`
 }
 
