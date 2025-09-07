@@ -37,7 +37,7 @@ func main() {
 		go func() {
 			logrus.WithFields(logrus.Fields{
 				"port": 80,
-			}).Info("main: Starting HTTP server")
+			}).Info("main: Starting HTTP redirect server")
 
 			server := &http.Server{
 				Addr:         constants.BindHost + ":80",
@@ -120,10 +120,6 @@ func main() {
 	router := gin.New()
 	handlers.Register(router)
 
-	logrus.WithFields(logrus.Fields{
-		"port": constants.BindPort,
-	}).Info("main: Starting HTTPS server")
-
 	server := &http.Server{
 		Addr:              constants.BindHost + ":" + constants.BindPort,
 		Handler:           router,
@@ -136,6 +132,10 @@ func main() {
 
 	var err error
 	if constants.Ssl {
+		logrus.WithFields(logrus.Fields{
+			"port": constants.BindPort,
+		}).Info("main: Starting HTTPS server")
+
 		sslCertByt, e := base64.StdEncoding.DecodeString(constants.SslCert)
 		if e != nil {
 			logrus.WithFields(logrus.Fields{
@@ -181,6 +181,10 @@ func main() {
 
 		err = server.ListenAndServeTLS("", "")
 	} else {
+		logrus.WithFields(logrus.Fields{
+			"port": constants.BindPort,
+		}).Info("main: Starting HTTP server")
+
 		err = server.ListenAndServe()
 	}
 	if err != nil {
