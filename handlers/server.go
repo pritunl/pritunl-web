@@ -80,6 +80,8 @@ type serverPostPutData struct {
 	PreConnectMsg    string      `json:"pre_connect_msg"`
 	Policy           string      `json:"policy"`
 	MssFix           interface{} `json:"mss_fix"`
+	TunMtu           int         `json:"tun_mtu"`
+	Fragment         int         `json:"fragment"`
 	Multihome        bool        `json:"multihome"`
 }
 
