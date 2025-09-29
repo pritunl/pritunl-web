@@ -92,7 +92,7 @@ func Register(engine *gin.Engine) {
 
 	engine.GET("/key/:param1", keyGet)
 	engine.GET("/key/:param1/:param2", keyGet)
-	engine.GET("/key/:param1/:param2/:param3/", keyGet)
+	engine.GET("/key/:param1/:param2/:param3", keyGet)
 	engine.GET("/key/:param1/:param2/:param3/:param4", keyGet)
 	engine.GET("/key/:param1/:param2/:param3/:param4/:param5", keyGet)
 	engine.POST("/key/duo", keyDuoPost)
@@ -103,12 +103,12 @@ func Register(engine *gin.Engine) {
 	engine.GET("/k/:short_code", keyShortGet)
 	engine.DELETE("/k/:short_code", keyShortDelete)
 	engine.GET("/ku/:short_code", keyApiShortGet)
-	engine.POST("/key/wg/:org_id/:user_id/:server_id/", keyWgPost)
-	engine.PUT("/key/wg/:org_id/:user_id/:server_id/", keyWgPut)
-	engine.POST("/key/ovpn/:org_id/:user_id/:server_id/", keyOvpnPost)
-	engine.POST("/key/ovpn_wait/:org_id/:user_id/:server_id/",
+	engine.POST("/key/wg/:org_id/:user_id/:server_id", keyWgPost)
+	engine.PUT("/key/wg/:org_id/:user_id/:server_id", keyWgPut)
+	engine.POST("/key/ovpn/:org_id/:user_id/:server_id", keyOvpnPost)
+	engine.POST("/key/ovpn_wait/:org_id/:user_id/:server_id",
 		keyOvpnWaitPost)
-	engine.POST("/key/wg_wait/:org_id/:user_id/:server_id/",
+	engine.POST("/key/wg_wait/:org_id/:user_id/:server_id",
 		keyWgWaitPost)
 	engine.POST("/sso/authenticate", ssoAuthenticatePost)
 	engine.GET("/sso/request", ssoRequestGet)
