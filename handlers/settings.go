@@ -85,6 +85,8 @@ type settingsPutData struct {
 	Route53Zone           string   `json:"route53_zone"`
 	OracleUserOcid        string   `json:"oracle_user_ocid"`
 	OraclePublicKey       string   `json:"oracle_public_key"`
+	PritunlCloudToken     string   `json:"pritunl_cloud_token"`
+	PritunlCloudSecret    string   `json:"pritunl_cloud_secret"`
 	UsEast1AccessKey      string   `json:"us_east_1_access_key"`
 	UsEast1SecretKey      string   `json:"us_east_1_secret_key"`
 	UsEast2AccessKey      string   `json:"us_east_2_access_key"`
