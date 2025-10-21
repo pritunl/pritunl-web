@@ -42,6 +42,7 @@ type serverPostPutData struct {
 	Ipv6             bool        `json:"ipv6"`
 	Ipv6Firewall     bool        `json:"ipv6_firewall"`
 	DynamicFirewall  bool        `json:"dynamic_firewall"`
+	BypassSsoAuth    bool        `json:"bypass_sso_auth"`
 	GeoSort          bool        `json:"geo_sort"`
 	ForceConnect     bool        `json:"force_connect"`
 	DeviceAuth       bool        `json:"device_auth"`
