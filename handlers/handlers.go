@@ -1,17 +1,27 @@
 package handlers
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/constants"
 	"github.com/pritunl/pritunl-web/errortypes"
+	"github.com/pritunl/pritunl-web/request"
 	"github.com/pritunl/pritunl-web/utils"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/crypto/nacl/secretbox"
 )
+
+type Token struct {
+	Id  string `json:"id"`
+	Ttl int64  `json:"ttl"`
+}
 
 func Limiter(c *gin.Context) {
 	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 50000)
@@ -36,6 +46,114 @@ func Errors(c *gin.Context) {
 	}
 }
 
+func authSessionEnd(c *gin.Context) {
+	req := &request.Request{
+		Method: "DELETE",
+		Path:   "/auth/session",
+	}
+	resp, err := req.Send(c)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+	defer resp.Body.Close()
+}
+
+func Authorize(c *gin.Context) {
+	tokenStr, err := c.Cookie("token")
+	if err != nil {
+		authSessionEnd(c)
+		if c.Request.URL.Path == "/" {
+			request.AbortRedirect(c, "/login")
+		} else {
+			request.AbortWithStatus(c, 401, "Missing token")
+		}
+		return
+	}
+
+	tokenByt, err := base64.URLEncoding.DecodeString(tokenStr)
+	if err != nil {
+		authSessionEnd(c)
+		if c.Request.URL.Path == "/" {
+			request.AbortRedirect(c, "/login")
+		} else {
+			request.AbortWithStatus(c, 401, "Failed to decode token")
+		}
+		return
+	}
+
+	if len(tokenByt) < 28 {
+		authSessionEnd(c)
+		if c.Request.URL.Path == "/" {
+			request.AbortRedirect(c, "/login")
+		} else {
+			request.AbortWithStatus(c, 401, "Token length invalid")
+		}
+		return
+	}
+
+	var nonce [24]byte
+	copy(nonce[:], tokenByt[:24])
+	encByt := tokenByt[24:]
+
+	decByt, ok := secretbox.Open(nil, encByt, &nonce, constants.WebSecret)
+	if !ok {
+		authSessionEnd(c)
+		if c.Request.URL.Path == "/" {
+			request.AbortRedirect(c, "/login")
+		} else {
+			request.AbortWithStatus(c, 401, "Failed to decrypt token")
+		}
+		return
+	}
+
+	token := &Token{}
+
+	err = json.Unmarshal(decByt, token)
+	if err != nil {
+		authSessionEnd(c)
+		if c.Request.URL.Path == "/" {
+			request.AbortRedirect(c, "/login")
+		} else {
+			request.AbortWithStatus(c, 401, "Failed to unmarshal token")
+		}
+		return
+	}
+
+	if token.Id == "" {
+		authSessionEnd(c)
+		if c.Request.URL.Path == "/" {
+			request.AbortRedirect(c, "/login")
+		} else {
+			request.AbortWithStatus(c, 401, "Token id invalid")
+		}
+		return
+	}
+
+	tokenTtl := time.Unix(token.Ttl, 0)
+	tokenSince := time.Since(tokenTtl)
+
+	if tokenSince < -730*time.Hour {
+		authSessionEnd(c)
+		if c.Request.URL.Path == "/" {
+			request.AbortRedirect(c, "/login")
+		} else {
+			request.AbortWithStatus(c, 401, "Token session timestamp invalid")
+		}
+		return
+	}
+
+	if tokenSince > 0 {
+		authSessionEnd(c)
+		if c.Request.URL.Path == "/" {
+			request.AbortRedirect(c, "/login")
+		} else {
+			request.AbortWithStatus(c, 401, "Token session expired")
+		}
+		return
+	}
+}
+
 func Redirect(c *gin.Context) {
 	if constants.ReverseProxyProtoHeader != "" &&
 		strings.ToLower(c.Request.Header.Get(
@@ -53,8 +171,8 @@ func Redirect(c *gin.Context) {
 		u.Host = utils.StripPort(c.Request.Host)
 		u.Scheme = "https"
 
-		c.Abort()
 		c.Redirect(http.StatusMovedPermanently, u.String())
+		c.Abort()
 		return
 	}
 }
@@ -64,171 +182,182 @@ func Register(engine *gin.Engine) {
 	engine.Use(Recovery)
 	engine.Use(Redirect)
 
-	engine.GET("/admin", adminGet)
-	engine.GET("/admin/:admin_id", adminGet)
-	engine.PUT("/admin/:admin_id", adminPut)
-	engine.POST("/admin", adminPost)
-	engine.DELETE("/admin/:admin_id", adminDelete)
-	engine.GET("/admin/:admin_id/audit", adminAuditGet)
+	openAuth := engine.Group("")
 
-	engine.POST("/auth/session", authSessionPost)
-	engine.DELETE("/auth/session", authSessionDelete)
-	engine.GET("/state", authStateGet)
+	authGroup := engine.Group("")
+	authGroup.Use(Authorize)
 
-	engine.GET("/event", eventGet)
-	engine.GET("/event/:cursor", eventGet)
+	authGroup.GET("/admin", adminGet)
+	authGroup.GET("/admin/:admin_id", adminGet)
+	authGroup.PUT("/admin/:admin_id", adminPut)
+	authGroup.POST("/admin", adminPost)
+	authGroup.DELETE("/admin/:admin_id", adminDelete)
+	authGroup.GET("/admin/:admin_id/audit", adminAuditGet)
 
-	engine.GET("/device/unregistered", deviceUnregisteredGet)
-	engine.PUT("/device/register/:org_id/:user_id/:device_id",
+	openAuth.POST("/auth/session", authSessionPost)
+	openAuth.DELETE("/auth/session", authSessionDelete)
+	authGroup.GET("/state", authStateGet)
+
+	authGroup.GET("/event", eventGet)
+	authGroup.GET("/event/:cursor", eventGet)
+
+	authGroup.GET("/device/unregistered", deviceUnregisteredGet)
+	authGroup.PUT("/device/register/:org_id/:user_id/:device_id",
 		deviceRegisterPut)
-	engine.DELETE("/device/register/:org_id/:user_id/:device_id",
+	authGroup.DELETE("/device/register/:org_id/:user_id/:device_id",
 		deviceRegisterDelete)
 
-	engine.GET("/host", hostGet)
-	engine.GET("/host/:host_id", hostGet)
-	engine.PUT("/host/:host_id", hostPut)
-	engine.DELETE("/host/:host_id", hostDelete)
-	engine.GET("/host/:host_id/usage/:period", hostUsageGet)
+	authGroup.GET("/host", hostGet)
+	authGroup.GET("/host/:host_id", hostGet)
+	authGroup.PUT("/host/:host_id", hostPut)
+	authGroup.DELETE("/host/:host_id", hostDelete)
+	authGroup.GET("/host/:host_id/usage/:period", hostUsageGet)
 
-	engine.GET("/key/:param1", keyGet)
-	engine.GET("/key/:param1/:param2", keyGet)
-	engine.GET("/key/:param1/:param2/:param3", keyGet)
-	engine.GET("/key/:param1/:param2/:param3/:param4", keyGet)
-	engine.GET("/key/:param1/:param2/:param3/:param4/:param5", keyGet)
-	engine.POST("/key/duo", keyDuoPost)
-	engine.POST("/key/yubico", keyYubicoPost)
-	engine.GET("/key_onc/:param1", keyOncGet)
-	engine.GET("/key_onc/:param1/:param2", keyOncGet)
-	engine.PUT("/key_pin/:key_id", keyPinPut)
-	engine.GET("/k/:short_code", keyShortGet)
-	engine.DELETE("/k/:short_code", keyShortDelete)
-	engine.GET("/ku/:short_code", keyApiShortGet)
-	engine.POST("/key/wg/:org_id/:user_id/:server_id", keyWgPost)
-	engine.PUT("/key/wg/:org_id/:user_id/:server_id", keyWgPut)
-	engine.POST("/key/ovpn/:org_id/:user_id/:server_id", keyOvpnPost)
-	engine.POST("/key/ovpn_wait/:org_id/:user_id/:server_id",
+	authGroup.GET("/data/:org_id/:user_id", dataKeyGet)
+	authGroup.GET("/data/:org_id/:user_id/:server_id", dataServerKeyGet)
+
+	openAuth.GET("/key/:param1", keyGet)
+	openAuth.GET("/key/:param1/:param2", keyGet)
+	openAuth.GET("/key/:param1/:param2/:param3", keyGet)
+	openAuth.GET("/key/:param1/:param2/:param3/:param4", keyGet)
+	openAuth.GET("/key/:param1/:param2/:param3/:param4/:param5", keyGet)
+	openAuth.POST("/key/duo", keyDuoPost)
+	openAuth.POST("/key/yubico", keyYubicoPost)
+	openAuth.GET("/key_onc/:key_id", keyOncGet)
+	openAuth.PUT("/key_pin/:key_id", keyPinPut)
+	openAuth.GET("/k/:short_code", keyShortGet)
+	openAuth.DELETE("/k/:short_code", keyShortDelete)
+	openAuth.GET("/ku/:short_code", keyApiShortGet)
+	openAuth.POST("/key/wg/:org_id/:user_id/:server_id", keyWgPost)
+	openAuth.PUT("/key/wg/:org_id/:user_id/:server_id", keyWgPut)
+	openAuth.POST("/key/ovpn/:org_id/:user_id/:server_id", keyOvpnPost)
+	openAuth.POST("/key/ovpn_wait/:org_id/:user_id/:server_id",
 		keyOvpnWaitPost)
-	engine.POST("/key/wg_wait/:org_id/:user_id/:server_id",
+	openAuth.POST("/key/wg_wait/:org_id/:user_id/:server_id",
 		keyWgWaitPost)
-	engine.POST("/sso/authenticate", ssoAuthenticatePost)
-	engine.GET("/sso/request", ssoRequestGet)
-	engine.GET("/sso/callback", ssoCallbackGet)
-	engine.POST("/sso/duo", ssoDuoPost)
-	engine.POST("/sso/yubico", ssoYubicoPost)
+	openAuth.POST("/sso/authenticate", ssoAuthenticatePost)
+	openAuth.GET("/sso/request", ssoRequestGet)
+	openAuth.GET("/sso/callback", ssoCallbackGet)
+	openAuth.POST("/sso/duo", ssoDuoPost)
+	openAuth.POST("/sso/yubico", ssoYubicoPost)
 
-	engine.GET("/link", linkGet)
-	engine.POST("/link", linkPost)
-	engine.PUT("/link/:link_id", linkPut)
-	engine.DELETE("/link/:link_id", linkDelete)
-	engine.GET("/link/:link_id/location", linkLocationGet)
-	engine.POST("/link/:link_id/location", linkLocationPost)
-	engine.PUT("/link/:link_id/location/:location_id", linkLocationPut)
-	engine.DELETE("/link/:link_id/location/:location_id", linkLocationDelete)
-	engine.POST("/link/:link_id/location/:location_id/route",
+	authGroup.GET("/link", linkGet)
+	authGroup.POST("/link", linkPost)
+	openAuth.PUT("/link/:link_id", linkPut)       // TODO
+	openAuth.DELETE("/link/:link_id", linkDelete) // TODO
+	authGroup.GET("/link/:link_id/location", linkLocationGet)
+	authGroup.POST("/link/:link_id/location", linkLocationPost)
+	authGroup.PUT("/link/:link_id/location/:location_id", linkLocationPut)
+	authGroup.DELETE("/link/:link_id/location/:location_id",
+		linkLocationDelete)
+	authGroup.POST("/link/:link_id/location/:location_id/route",
 		linkLocationRoutePost)
-	engine.PUT("/link/:link_id/location/:location_id/route/:route_id",
+	authGroup.PUT("/link/:link_id/location/:location_id/route/:route_id",
 		linkLocationRoutePut)
-	engine.DELETE("/link/:link_id/location/:location_id/route/:route_id",
+	authGroup.DELETE("/link/:link_id/location/:location_id/route/:route_id",
 		linkLocationRouteDelete)
-	engine.GET("/link/:link_id/location/:location_id/host/:host_id/uri",
+	authGroup.GET("/link/:link_id/location/:location_id/host/:host_id/uri",
 		linkLocationHostUriGet)
-	engine.GET("/link/:link_id/location/:location_id/host/:host_id/conf",
+	authGroup.GET("/link/:link_id/location/:location_id/host/:host_id/conf",
 		linkLocationHostConfGet)
-	engine.POST("/link/:link_id/location/:location_id/host",
+	authGroup.POST("/link/:link_id/location/:location_id/host",
 		linkLocationHostPost)
-	engine.PUT("/link/:link_id/location/:location_id/host/:host_id",
+	authGroup.PUT("/link/:link_id/location/:location_id/host/:host_id",
 		linkLocationHostPut)
-	engine.DELETE("/link/:link_id/location/:location_id/host/:host_id",
+	authGroup.DELETE("/link/:link_id/location/:location_id/host/:host_id",
 		linkLocationHostDelete)
-	engine.POST("/link/:link_id/location/:location_id/peer",
+	authGroup.POST("/link/:link_id/location/:location_id/peer",
 		linkLocationPeerPost)
-	engine.DELETE("/link/:link_id/location/:location_id/peer/:peer_id",
+	authGroup.DELETE("/link/:link_id/location/:location_id/peer/:peer_id",
 		linkLocationPeerDelete)
-	engine.POST("/link/:link_id/location/:location_id/transit",
+	authGroup.POST("/link/:link_id/location/:location_id/transit",
 		linkLocationTransitPost)
-	engine.DELETE("/link/:link_id/location/:location_id/transit/:transit_id",
+	authGroup.DELETE(
+		"/link/:link_id/location/:location_id/transit/:transit_id",
 		linkLocationTransitDelete)
 
-	engine.GET("/log", logGet)
-	engine.GET("/logs", logsGet)
+	authGroup.GET("/log", logGet)
+	authGroup.GET("/logs", logsGet)
 
-	engine.GET("/organization", orgGet)
-	engine.GET("/organization/:org_id", orgGet)
-	engine.POST("/organization", orgPost)
-	engine.PUT("/organization/:org_id", orgPut)
-	engine.DELETE("/organization/:org_id", orgDelete)
+	authGroup.GET("/organization", orgGet)
+	authGroup.GET("/organization/:org_id", orgGet)
+	authGroup.POST("/organization", orgPost)
+	authGroup.PUT("/organization/:org_id", orgPut)
+	authGroup.DELETE("/organization/:org_id", orgDelete)
 
-	engine.GET("/ping", pingGet)
-	engine.GET("/check", checkGet)
+	openAuth.GET("/ping", pingGet)
+	openAuth.GET("/check", checkGet)
 
-	engine.GET("/robots.txt", robotsGet)
+	openAuth.GET("/robots.txt", robotsGet)
 
-	engine.GET("/server", serverGet)
-	engine.GET("/server/:server_id", serverGet)
-	engine.POST("/server", serverPost)
-	engine.PUT("/server/:server_id", serverPut)
-	engine.DELETE("/server/:server_id", serverDelete)
-	engine.GET("/server/:server_id/organization", serverOrgGet)
-	engine.PUT("/server/:server_id/organization/:org_id", serverOrgPut)
-	engine.DELETE("/server/:server_id/organization/:org_id", serverOrgDelete)
-	engine.GET("/server/:server_id/route", serverRouteGet)
-	engine.POST("/server/:server_id/route", serverRoutePost)
-	engine.POST("/server/:server_id/routes", serverRoutesPost)
-	engine.PUT("/server/:server_id/route/:route_net", serverRoutePut)
-	engine.DELETE("/server/:server_id/route/:route_net", serverRouteDelete)
-	engine.GET("/server/:server_id/host", serverHostGet)
-	engine.PUT("/server/:server_id/host/:host_id", serverHostPut)
-	engine.DELETE("/server/:server_id/host/:host_id", serverHostDelete)
-	engine.GET("/server/:server_id/link", serverLinkGet)
-	engine.PUT("/server/:server_id/link/:link_id", serverLinkPut)
-	engine.DELETE("/server/:server_id/link/:link_id", serverLinkDelete)
-	engine.PUT("/server/:server_id/operation/:operation", serverOperationPut)
-	engine.GET("/server/:server_id/output", serverOutputGet)
-	engine.DELETE("/server/:server_id/output", serverOutputDelete)
-	engine.GET("/server/:server_id/link_output", serverLinkOutputGet)
-	engine.DELETE("/server/:server_id/link_output", serverLinkOutputDelete)
-	engine.GET("/server/:server_id/bandwidth/:period", serverBandwidthGet)
+	authGroup.GET("/server", serverGet)
+	authGroup.GET("/server/:server_id", serverGet)
+	authGroup.POST("/server", serverPost)
+	authGroup.PUT("/server/:server_id", serverPut)
+	authGroup.DELETE("/server/:server_id", serverDelete)
+	authGroup.GET("/server/:server_id/organization", serverOrgGet)
+	authGroup.PUT("/server/:server_id/organization/:org_id", serverOrgPut)
+	authGroup.DELETE("/server/:server_id/organization/:org_id",
+		serverOrgDelete)
+	authGroup.GET("/server/:server_id/route", serverRouteGet)
+	authGroup.POST("/server/:server_id/route", serverRoutePost)
+	authGroup.POST("/server/:server_id/routes", serverRoutesPost)
+	authGroup.PUT("/server/:server_id/route/:route_net", serverRoutePut)
+	authGroup.DELETE("/server/:server_id/route/:route_net", serverRouteDelete)
+	authGroup.GET("/server/:server_id/host", serverHostGet)
+	authGroup.PUT("/server/:server_id/host/:host_id", serverHostPut)
+	authGroup.DELETE("/server/:server_id/host/:host_id", serverHostDelete)
+	authGroup.GET("/server/:server_id/link", serverLinkGet)
+	authGroup.PUT("/server/:server_id/link/:link_id", serverLinkPut)
+	authGroup.DELETE("/server/:server_id/link/:link_id", serverLinkDelete)
+	authGroup.PUT("/server/:server_id/operation/:operation",
+		serverOperationPut)
+	authGroup.GET("/server/:server_id/output", serverOutputGet)
+	authGroup.DELETE("/server/:server_id/output", serverOutputDelete)
+	authGroup.GET("/server/:server_id/link_output", serverLinkOutputGet)
+	authGroup.DELETE("/server/:server_id/link_output", serverLinkOutputDelete)
+	authGroup.GET("/server/:server_id/bandwidth/:period", serverBandwidthGet)
 
-	engine.GET("/settings", settingsGet)
-	engine.PUT("/settings", settingsPut)
-	engine.GET("/settings/zones", settingsZonesGet)
+	authGroup.GET("/settings", settingsGet)
+	authGroup.PUT("/settings", settingsPut)
+	authGroup.GET("/settings/zones", settingsZonesGet)
 
-	engine.GET("/setup", setupGet)
-	engine.GET("/upgrade", upgradeGet)
-	engine.GET("/setup/s/fredoka-one.eot", setupFredokaEotStaticGet)
-	engine.GET("/setup/s/ubuntu-bold.eot", setupUbuntuEotStaticGet)
-	engine.GET("/setup/s/fredoka-one.woff", setupFredokaWoffStaticGet)
-	engine.GET("/setup/s/ubuntu-bold.woff", setupUbuntuWoffStaticGet)
-	engine.PUT("/setup/mongodb", setupMongoPut)
-	engine.GET("/setup/upgrade", setupUpgradeGet)
-	engine.GET("/success", successGet)
+	openAuth.GET("/setup", setupGet)
+	openAuth.GET("/upgrade", upgradeGet)
+	openAuth.GET("/setup/s/fredoka-one.eot", setupFredokaEotStaticGet)
+	openAuth.GET("/setup/s/ubuntu-bold.eot", setupUbuntuEotStaticGet)
+	openAuth.GET("/setup/s/fredoka-one.woff", setupFredokaWoffStaticGet)
+	openAuth.GET("/setup/s/ubuntu-bold.woff", setupUbuntuWoffStaticGet)
+	openAuth.PUT("/setup/mongodb", setupMongoPut)
+	openAuth.GET("/setup/upgrade", setupUpgradeGet)
+	openAuth.GET("/success", successGet)
 
-	engine.GET("/s/*path", staticPathGet)
-	engine.GET("/fredoka-one.eot", fredokaEotStaticGet)
-	engine.GET("/ubuntu-bold.eot", ubuntuEotStaticGet)
-	engine.GET("/fredoka-one.woff", fredokaWoffStaticGet)
-	engine.GET("/ubuntu-bold.woff", ubuntuWoffStaticGet)
-	engine.GET("/logo.png", logoStaticGet)
-	engine.GET("/", rootGet)
-	engine.GET("/login", loginGet)
+	authGroup.GET("/s/*path", staticPathGet)
+	openAuth.GET("/fredoka-one.eot", fredokaEotStaticGet)
+	openAuth.GET("/ubuntu-bold.eot", ubuntuEotStaticGet)
+	openAuth.GET("/fredoka-one.woff", fredokaWoffStaticGet)
+	openAuth.GET("/ubuntu-bold.woff", ubuntuWoffStaticGet)
+	openAuth.GET("/logo.png", logoStaticGet)
+	authGroup.GET("/", rootGet)
+	openAuth.GET("/login", loginGet)
 
-	engine.GET("/status", statusGet)
+	authGroup.GET("/status", statusGet)
 
-	engine.GET("/subscription", subscriptionGet)
-	engine.GET("/subscription/styles/:plan/:ver", subscriptionStylesGet)
-	engine.POST("/subscription", subscriptionPost)
-	engine.PUT("/subscription", subscriptionPut)
-	engine.DELETE("/subscription", subscriptionDelete)
+	authGroup.GET("/subscription", subscriptionGet)
+	authGroup.GET("/subscription/styles/:plan/:ver", subscriptionStylesGet)
+	authGroup.POST("/subscription", subscriptionPost)
+	authGroup.PUT("/subscription", subscriptionPut)
+	authGroup.DELETE("/subscription", subscriptionDelete)
 
-	engine.GET("/user/:org_id", usersGet)
-	engine.GET("/user/:org_id/:user_id", userGet)
-	engine.POST("/user/:org_id", userPost)
-	engine.POST("/user/:org_id/multi", userMultiPost)
-	engine.PUT("/user/:org_id/:user_id", userPut)
-	engine.DELETE("/user/:org_id/:user_id", userDelete)
-	engine.PUT("/user/:org_id/:user_id/otp_secret", userOtpSecretPut)
-	engine.GET("/user/:org_id/:user_id/audit", userAuditGet)
-	engine.PUT("/user/:org_id/:user_id/device/:device_id", userDevicePut)
-	engine.DELETE("/user/:org_id/:user_id/device/:device_id",
+	authGroup.GET("/user/:org_id", usersGet)
+	authGroup.GET("/user/:org_id/:user_id", userGet)
+	authGroup.POST("/user/:org_id", userPost)
+	authGroup.POST("/user/:org_id/multi", userMultiPost)
+	authGroup.PUT("/user/:org_id/:user_id", userPut)
+	authGroup.DELETE("/user/:org_id/:user_id", userDelete)
+	authGroup.PUT("/user/:org_id/:user_id/otp_secret", userOtpSecretPut)
+	authGroup.GET("/user/:org_id/:user_id/audit", userAuditGet)
+	authGroup.PUT("/user/:org_id/:user_id/device/:device_id", userDevicePut)
+	authGroup.DELETE("/user/:org_id/:user_id/device/:device_id",
 		userDeviceDelete)
 }
