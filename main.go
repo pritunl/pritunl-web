@@ -33,6 +33,50 @@ func copyHeader(dst, src http.Header) {
 }
 
 func main() {
+	constants.ReverseProxyHeader = os.Getenv("REVERSE_PROXY_HEADER")
+	constants.ReverseProxyProtoHeader = os.Getenv("REVERSE_PROXY_PROTO_HEADER")
+	constants.RedirectServer = os.Getenv("REDIRECT_SERVER")
+	constants.BindHost = os.Getenv("BIND_HOST")
+	constants.BindPort = os.Getenv("BIND_PORT")
+	constants.InternalHost = os.Getenv("INTERNAL_ADDRESS")
+	constants.SslCert = os.Getenv("SSL_CERT")
+	constants.SslKey = os.Getenv("SSL_KEY")
+	webSecretStr := os.Getenv("WEB_SECRET")
+	os.Unsetenv("REVERSE_PROXY_HEADER")
+	os.Unsetenv("REVERSE_PROXY_PROTO_HEADER")
+	os.Unsetenv("REDIRECT_SERVER")
+	os.Unsetenv("BIND_HOST")
+	os.Unsetenv("BIND_PORT")
+	os.Unsetenv("INTERNAL_ADDRESS")
+	os.Unsetenv("SSL_CERT")
+	os.Unsetenv("SSL_KEY")
+	os.Unsetenv("WEB_SECRET")
+
+	constants.Ssl = constants.SslCert != "" && constants.SslKey != ""
+	if constants.Ssl {
+		constants.Scheme = "https"
+	} else {
+		constants.Scheme = "http"
+	}
+
+	var err error
+	if webSecretStr != "" {
+		webSecretByt, e := base64.StdEncoding.DecodeString(webSecretStr)
+		if e != nil {
+			err = &errortypes.ParseError{
+				errors.Wrap(e, "main: Failed to decode web secret"),
+			}
+
+			logrus.WithFields(logrus.Fields{
+				"error": err,
+			}).Error("main: Failed to decode web secret")
+
+			panic(err)
+		}
+		constants.WebSecret = &[32]byte{}
+		copy(constants.WebSecret[:], webSecretByt)
+	}
+
 	if constants.RedirectServer == "true" && constants.BindPort != "80" {
 		go func() {
 			logrus.WithFields(logrus.Fields{
@@ -130,7 +174,6 @@ func main() {
 		MaxHeaderBytes:    500000,
 	}
 
-	var err error
 	if constants.Ssl {
 		logrus.WithFields(logrus.Fields{
 			"port": constants.BindPort,
