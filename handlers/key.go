@@ -52,18 +52,11 @@ func keyGet(c *gin.Context) {
 }
 
 func keyOncGet(c *gin.Context) {
-	param1 := utils.FilterStr(c.Params.ByName("param1"), 128)
-	param2 := utils.FilterStr(c.Params.ByName("param2"), 128)
-
-	path := "/key_onc/" + param1
-
-	if param2 != "" {
-		path += "/" + param2
-	}
+	keyId := utils.FilterStr(c.Params.ByName("key_id"), 128)
 
 	req := &request.Request{
 		Method: "GET",
-		Path:   path,
+		Path:   "/key_onc/" + keyId,
 	}
 
 	req.Do(c)
