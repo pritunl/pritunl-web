@@ -47,6 +47,8 @@ func Errors(c *gin.Context) {
 }
 
 func authSessionEnd(c *gin.Context) {
+	c.Set("validated", false)
+
 	req := &request.Request{
 		Method: "DELETE",
 		Path:   "/auth/session",
@@ -59,9 +61,18 @@ func authSessionEnd(c *gin.Context) {
 	defer resp.Body.Close()
 }
 
+func Unauthorize(c *gin.Context) {
+	c.Set("validated", false)
+}
+
 func Authorize(c *gin.Context) {
 	tokenStr, err := c.Cookie("token")
 	if err != nil {
+		if !constants.WebStrict {
+			c.Set("validated", false)
+			return
+		}
+
 		authSessionEnd(c)
 		if c.Request.URL.Path == "/" {
 			request.AbortRedirect(c, "/login")
@@ -152,6 +163,8 @@ func Authorize(c *gin.Context) {
 		}
 		return
 	}
+
+	c.Set("validated", true)
 }
 
 func Redirect(c *gin.Context) {
@@ -183,6 +196,7 @@ func Register(engine *gin.Engine) {
 	engine.Use(Redirect)
 
 	openAuth := engine.Group("")
+	openAuth.Use(Unauthorize)
 
 	authGroup := engine.Group("")
 	authGroup.Use(Authorize)
