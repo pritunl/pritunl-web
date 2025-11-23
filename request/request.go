@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
@@ -32,29 +33,29 @@ type Request struct {
 	Json     interface{}
 }
 
-func (r *Request) Do(c *gin.Context) {
+func (r *Request) Send(c *gin.Context) (resp *http.Response, err error) {
 	reqUrl := "http://" + constants.InternalHost + r.Path
 
 	var body io.Reader
 
 	if r.Json != nil {
 		if c.ContentType() != "application/json" {
-			err := errortypes.RequestError{
+			err = errortypes.RequestError{
 				errors.New("request: Invalid content type"),
 			}
 			c.AbortWithError(520, err)
 			return
 		}
 
-		err := c.BindJSON(r.Json)
+		err = c.BindJSON(r.Json)
 		if err != nil {
 			return
 		}
 
-		data, err := json.Marshal(r.Json)
-		if err != nil {
+		data, e := json.Marshal(r.Json)
+		if e != nil {
 			err = errortypes.RequestError{
-				errors.Wrap(err, "request: Json marshal error"),
+				errors.Wrap(e, "request: Json marshal error"),
 			}
 			logger.WithFields(logger.Fields{
 				"error": err,
@@ -97,6 +98,10 @@ func (r *Request) Do(c *gin.Context) {
 		req.URL.RawQuery = r.RawQuery
 	}
 
+	req.Header.Set(
+		"PR-Validated",
+		strconv.FormatBool(c.MustGet("validated").(bool)),
+	)
 	req.Header.Set("PR-Forwarded-Header",
 		c.Request.Header.Get(constants.ReverseProxyHeader))
 	req.Header.Set("PR-Forwarded-Url", forwardUrl.String())
@@ -121,7 +126,7 @@ func (r *Request) Do(c *gin.Context) {
 		req.Header.Set("Content-Type", "application/json")
 	}
 
-	resp, err := client.Do(req)
+	resp, err = client.Do(req)
 	if err != nil {
 		err = errortypes.RequestError{
 			errors.Wrap(err, "request: Request failed"),
@@ -130,6 +135,15 @@ func (r *Request) Do(c *gin.Context) {
 			"error": err,
 		}).Error("request: Request error")
 		c.AbortWithError(502, err)
+		return
+	}
+
+	return
+}
+
+func (r *Request) Do(c *gin.Context) {
+	resp, err := r.Send(c)
+	if err != nil {
 		return
 	}
 	defer resp.Body.Close()
