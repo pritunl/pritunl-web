@@ -44,6 +44,7 @@ func main() {
 	constants.InternalHost = os.Getenv("INTERNAL_ADDRESS")
 	constants.SslCert = os.Getenv("SSL_CERT")
 	constants.SslKey = os.Getenv("SSL_KEY")
+	webStrictStr := os.Getenv("WEB_STRICT")
 	webSecretStr := os.Getenv("WEB_SECRET")
 	os.Unsetenv("REVERSE_PROXY_HEADER")
 	os.Unsetenv("REVERSE_PROXY_PROTO_HEADER")
@@ -53,6 +54,7 @@ func main() {
 	os.Unsetenv("INTERNAL_ADDRESS")
 	os.Unsetenv("SSL_CERT")
 	os.Unsetenv("SSL_KEY")
+	os.Unsetenv("WEB_STRICT")
 	os.Unsetenv("WEB_SECRET")
 
 	constants.Ssl = constants.SslCert != "" && constants.SslKey != ""
@@ -60,6 +62,12 @@ func main() {
 		constants.Scheme = "https"
 	} else {
 		constants.Scheme = "http"
+	}
+
+	if webStrictStr == "false" {
+		constants.WebStrict = false
+	} else {
+		constants.WebStrict = true
 	}
 
 	var err error
