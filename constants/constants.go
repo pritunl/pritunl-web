@@ -10,6 +10,7 @@ var (
 	SslCert                 string
 	SslKey                  string
 	WebSecret               *[32]byte
+	WebStrict               bool
 	Ssl                     bool
 	Scheme                  string
 )
