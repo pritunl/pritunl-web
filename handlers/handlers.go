@@ -237,7 +237,6 @@ func Register(engine *gin.Engine) {
 	openAuth.GET("/key/:param1/:param2/:param3/:param4/:param5", keyGet)
 	openAuth.POST("/key/duo", keyDuoPost)
 	openAuth.POST("/key/yubico", keyYubicoPost)
-	openAuth.GET("/key_onc/:key_id", keyOncGet)
 	openAuth.PUT("/key_pin/:key_id", keyPinPut)
 	openAuth.GET("/k/:short_code", keyShortGet)
 	openAuth.DELETE("/k/:short_code", keyShortDelete)

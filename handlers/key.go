@@ -51,17 +51,6 @@ func keyGet(c *gin.Context) {
 	req.Do(c)
 }
 
-func keyOncGet(c *gin.Context) {
-	keyId := utils.FilterStr(c.Params.ByName("key_id"), 128)
-
-	req := &request.Request{
-		Method: "GET",
-		Path:   "/key_onc/" + keyId,
-	}
-
-	req.Do(c)
-}
-
 type userKeyPinPutData struct {
 	Pin        string `json:"pin"`
 	CurrentPin string `json:"current_pin"`
