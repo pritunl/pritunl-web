@@ -81,26 +81,35 @@ type linkStatePutData struct {
 	Errors        []string                     `json:"errors"`
 }
 
+func linkStatePut(c *gin.Context) {
+	data := &linkStatePutData{}
+
+	req := &request.Request{
+		Method: "PUT",
+		Path:   "/link/state",
+		Json:   data,
+	}
+
+	req.Do(c)
+}
+
+func linkStateDelete(c *gin.Context) {
+	req := &request.Request{
+		Method: "DELETE",
+		Path:   "/link/state",
+	}
+
+	req.Do(c)
+}
+
 func linkPut(c *gin.Context) {
-	var req *request.Request
 	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
+	data := &linkPutData{}
 
-	if linkId == "state" {
-		data := &linkStatePutData{}
-
-		req = &request.Request{
-			Method: "PUT",
-			Path:   "/link/state",
-			Json:   data,
-		}
-	} else {
-		data := &linkPutData{}
-
-		req = &request.Request{
-			Method: "PUT",
-			Path:   "/link/" + linkId,
-			Json:   data,
-		}
+	req := &request.Request{
+		Method: "PUT",
+		Path:   "/link/" + linkId,
+		Json:   data,
 	}
 
 	req.Do(c)

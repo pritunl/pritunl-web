@@ -256,8 +256,10 @@ func Register(engine *gin.Engine) {
 
 	authGroup.GET("/link", linkGet)
 	authGroup.POST("/link", linkPost)
-	openAuth.PUT("/link/:link_id", linkPut)       // TODO
-	openAuth.DELETE("/link/:link_id", linkDelete) // TODO
+	openAuth.PUT("/link/state", linkStatePut)
+	openAuth.DELETE("/link/state", linkStateDelete)
+	authGroup.PUT("/link/:link_id", linkPut)
+	authGroup.DELETE("/link/:link_id", linkDelete)
 	authGroup.GET("/link/:link_id/location", linkLocationGet)
 	authGroup.POST("/link/:link_id/location", linkLocationPost)
 	authGroup.PUT("/link/:link_id/location/:location_id", linkLocationPut)
