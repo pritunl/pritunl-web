@@ -16,7 +16,6 @@ func keyGet(c *gin.Context) {
 	param5 := utils.FilterStr(c.Params.ByName("param5"), 128)
 
 	path := "/key/" + param1
-	var query map[string]string
 
 	if param2 != "" {
 		path += "/" + param2
@@ -26,13 +25,6 @@ func keyGet(c *gin.Context) {
 				path += "/" + param4
 				if param5 != "" {
 					path += "/" + param5
-					if param1 == "sync" {
-						vInt, _ := strconv.Atoi(c.Query("ver"))
-						if vInt != 0 {
-							query = map[string]string{}
-							query["ver"] = strconv.Itoa(vInt)
-						}
-					}
 				}
 			}
 		}
@@ -41,7 +33,15 @@ func keyGet(c *gin.Context) {
 	req := &request.Request{
 		Method: "GET",
 		Path:   path,
-		Query:  query,
+	}
+
+	if param1 == "sync" {
+		vInt, _ := strconv.Atoi(c.Query("ver"))
+		if vInt != 0 {
+			req.Query = map[string]string{
+				"ver": strconv.Itoa(vInt),
+			}
+		}
 	}
 
 	if param1 == "request" || param1 == "callback" {
