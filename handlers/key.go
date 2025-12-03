@@ -30,7 +30,7 @@ func keyGet(c *gin.Context) {
 						vInt, _ := strconv.Atoi(c.Query("ver"))
 						if vInt != 0 {
 							query = map[string]string{}
-							query["v"] = strconv.Itoa(vInt)
+							query["ver"] = strconv.Itoa(vInt)
 						}
 					}
 				}
