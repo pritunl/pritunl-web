@@ -39,6 +39,7 @@ type serverPostPutData struct {
 	RestrictRoutes   bool        `json:"restrict_routes"`
 	Wg               bool        `json:"wg"`
 	HideOvpn         bool        `json:"hide_ovpn"`
+	OvpnDco          bool        `json:"ovpn_dco"`
 	Ipv6             bool        `json:"ipv6"`
 	Ipv6Firewall     bool        `json:"ipv6_firewall"`
 	DynamicFirewall  bool        `json:"dynamic_firewall"`
