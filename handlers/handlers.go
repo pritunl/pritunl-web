@@ -46,6 +46,15 @@ func Errors(c *gin.Context) {
 	}
 }
 
+func Features(c *gin.Context) {
+	if c.Request.ProtoMajor == 1 && c.Request.ProtoMinor == 0 {
+		c.String(http.StatusHTTPVersionNotSupported, "HTTP/1.0 not supported")
+		c.Abort()
+		return
+	}
+	c.Next()
+}
+
 func authSessionEnd(c *gin.Context) {
 	c.Set("validated", false)
 
@@ -191,6 +200,7 @@ func Redirect(c *gin.Context) {
 }
 
 func Register(engine *gin.Engine) {
+	engine.Use(Features)
 	engine.Use(Limiter)
 	engine.Use(Recovery)
 	engine.Use(Redirect)
