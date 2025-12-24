@@ -101,6 +101,15 @@ func main() {
 				Handler: http.HandlerFunc(func(
 					w http.ResponseWriter, req *http.Request) {
 
+					if req.ProtoMajor == 1 && req.ProtoMinor == 0 {
+						http.Error(
+							w,
+							"HTTP/1.0 not supported",
+							http.StatusHTTPVersionNotSupported,
+						)
+						return
+					}
+
 					if strings.HasPrefix(req.URL.Path,
 						"/.well-known/acme-challenge/") {
 
