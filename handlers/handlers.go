@@ -80,6 +80,16 @@ func Unauthorize(c *gin.Context) {
 }
 
 func Authorize(c *gin.Context) {
+	if constants.WebSecret == nil {
+		authSessionEnd(c)
+		if c.Request.URL.Path == "/" {
+			request.AbortRedirect(c, "/login")
+		} else {
+			request.AbortWithStatus(c, 401, "Not initialized")
+		}
+		return
+	}
+
 	tokenStr, err := c.Cookie("token")
 	if err != nil {
 		if !constants.WebStrict {
