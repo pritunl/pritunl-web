@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -30,6 +31,10 @@ func Limiter(c *gin.Context) {
 func Recovery(c *gin.Context) {
 	defer func() {
 		if r := recover(); r != nil {
+			logrus.WithFields(logrus.Fields{
+				"error": errors.New(fmt.Sprintf("%s", r)),
+			}).Error("handlers: Handler panic")
+
 			c.AbortWithStatus(http.StatusNotExtended)
 		}
 	}()
