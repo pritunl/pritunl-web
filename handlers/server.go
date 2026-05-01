@@ -183,16 +183,17 @@ func serverRouteGet(c *gin.Context) {
 }
 
 type serverRoutePostPutData struct {
-	Network      string `json:"network"`
-	Comment      string `json:"comment"`
-	Metric       int    `json:"metric"`
-	Nat          bool   `json:"nat"`
-	NatInterface string `json:"nat_interface"`
-	NatNetmap    string `json:"nat_netmap"`
-	Advertise    bool   `json:"advertise"`
-	VpcRegion    string `json:"vpc_region"`
-	VpcId        string `json:"vpc_id"`
-	NetGateway   bool   `json:"net_gateway"`
+	Network           string   `json:"network"`
+	Comment           string   `json:"comment"`
+	Metric            int      `json:"metric"`
+	Nat               bool     `json:"nat"`
+	NatInterface      string   `json:"nat_interface"`
+	NatNetmap         string   `json:"nat_netmap"`
+	Advertise         bool     `json:"advertise"`
+	AdvertiseResource []string `json:"advertise_resource"`
+	VpcRegion         string   `json:"vpc_region"`
+	VpcId             string   `json:"vpc_id"`
+	NetGateway        bool     `json:"net_gateway"`
 }
 
 func serverRoutePost(c *gin.Context) {
