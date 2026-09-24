@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/constants"
 	"github.com/pritunl/pritunl-web/errortypes"
+	"github.com/pritunl/pritunl-web/utils"
 	"github.com/pritunl/tools/logger"
 )
 
@@ -24,13 +25,17 @@ var client = &http.Client{
 	Timeout: 2 * time.Minute,
 }
 
+type Filterer interface {
+	Filter()
+}
+
 type Request struct {
 	Method   string
 	Path     string
 	Headers  []string
 	Query    map[string]string
 	RawQuery string
-	Json     interface{}
+	Json     Filterer
 }
 
 func (r *Request) Send(c *gin.Context) (resp *http.Response, err error) {
@@ -51,6 +56,8 @@ func (r *Request) Send(c *gin.Context) (resp *http.Response, err error) {
 		if err != nil {
 			return
 		}
+
+		r.Json.Filter()
 
 		data, e := json.Marshal(r.Json)
 		if e != nil {
@@ -81,7 +88,7 @@ func (r *Request) Send(c *gin.Context) (resp *http.Response, err error) {
 
 	forwardUrl := url.URL{
 		Scheme: constants.Scheme,
-		Host:   c.Request.Host,
+		Host:   utils.FilterDomain(c.Request.Host),
 	}
 
 	if r.Query != nil {
@@ -102,23 +109,23 @@ func (r *Request) Send(c *gin.Context) (resp *http.Response, err error) {
 		"PR-Validated",
 		strconv.FormatBool(c.MustGet("validated").(bool)),
 	)
-	req.Header.Set("PR-Forwarded-Header",
-		c.Request.Header.Get(constants.ReverseProxyHeader))
+	req.Header.Set("PR-Forwarded-Header", filterForwardedHeader(
+		c.Request.Header.Get(constants.ReverseProxyHeader)))
 	req.Header.Set("PR-Forwarded-Url", forwardUrl.String())
 	req.Header.Set("PR-Forwarded-For",
 		parseRemoteAddr(c.Request.RemoteAddr))
 
-	copyHeader(req, c.Request, "Auth-Token")
-	copyHeader(req, c.Request, "Auth-Timestamp")
-	copyHeader(req, c.Request, "Auth-Nonce")
-	copyHeader(req, c.Request, "Auth-Signature")
+	copyHeader(req, c.Request, "Auth-Token", utils.FilterId)
+	copyHeader(req, c.Request, "Auth-Timestamp", utils.FilterId)
+	copyHeader(req, c.Request, "Auth-Nonce", utils.FilterId)
+	copyHeader(req, c.Request, "Auth-Signature", utils.FilterBase64)
 
-	copyHeader(req, c.Request, "Cookie")
-	copyHeader(req, c.Request, "Csrf-Token")
+	copyHeader(req, c.Request, "Cookie", utils.FilterOpen)
+	copyHeader(req, c.Request, "Csrf-Token", utils.FilterId)
 
 	if r.Headers != nil {
 		for _, key := range r.Headers {
-			copyHeader(req, c.Request, key)
+			copyHeader(req, c.Request, key, utils.FilterOpen)
 		}
 	}
 
@@ -175,11 +182,11 @@ func DoCheck(w http.ResponseWriter, r *http.Request) {
 
 	forwardUrl := url.URL{
 		Scheme: constants.Scheme,
-		Host:   r.Host,
+		Host:   utils.FilterDomain(r.Host),
 	}
 
-	req.Header.Set("PR-Forwarded-Header",
-		r.Header.Get(constants.ReverseProxyHeader))
+	req.Header.Set("PR-Forwarded-Header", filterForwardedHeader(
+		r.Header.Get(constants.ReverseProxyHeader)))
 	req.Header.Set("PR-Forwarded-Url", forwardUrl.String())
 	req.Header.Set("PR-Forwarded-For", parseRemoteAddr(r.RemoteAddr))
 

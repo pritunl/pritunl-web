@@ -7,13 +7,13 @@ import (
 )
 
 func hostGet(c *gin.Context) {
-	hostId := utils.FilterStr(c.Params.ByName("host_id"), 128)
+	hostId := utils.FilterId(c.Params.ByName("host_id"))
 	if hostId != "" {
 		hostId = "/" + hostId
 	}
 
 	var query map[string]string
-	page := c.Query("page")
+	page := utils.FilterId(c.Query("page"))
 	if page != "" {
 		query = map[string]string{
 			"page": page,
@@ -45,8 +45,22 @@ type hostPutData struct {
 	InstanceId        string `json:"instance_id"`
 }
 
+func (d *hostPutData) Filter() {
+	d.Name = utils.FilterStr(d.Name, 1024)
+	d.PublicAddress = utils.FilterDomain(d.PublicAddress)
+	d.PublicAddress6 = utils.FilterDomain(d.PublicAddress6)
+	d.RoutedSubnet6 = utils.FilterStr(d.RoutedSubnet6, 1024)
+	d.RoutedSubnet6Wg = utils.FilterStr(d.RoutedSubnet6Wg, 1024)
+	d.LocalAddress = utils.FilterDomain(d.LocalAddress)
+	d.LocalAddress6 = utils.FilterDomain(d.LocalAddress6)
+	d.LinkAddress = utils.FilterDomain(d.LinkAddress)
+	d.SyncAddress = utils.FilterDomain(d.SyncAddress)
+	d.AvailabilityGroup = utils.FilterStr(d.AvailabilityGroup, 1024)
+	d.InstanceId = utils.FilterStr(d.InstanceId, 1024)
+}
+
 func hostPut(c *gin.Context) {
-	hostId := utils.FilterStr(c.Params.ByName("host_id"), 128)
+	hostId := utils.FilterId(c.Params.ByName("host_id"))
 	data := &hostPutData{}
 
 	req := &request.Request{
@@ -59,7 +73,7 @@ func hostPut(c *gin.Context) {
 }
 
 func hostDelete(c *gin.Context) {
-	hostId := utils.FilterStr(c.Params.ByName("host_id"), 128)
+	hostId := utils.FilterId(c.Params.ByName("host_id"))
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -70,8 +84,8 @@ func hostDelete(c *gin.Context) {
 }
 
 func hostUsageGet(c *gin.Context) {
-	hostId := utils.FilterStr(c.Params.ByName("host_id"), 128)
-	period := utils.FilterStr(c.Params.ByName("period"), 128)
+	hostId := utils.FilterId(c.Params.ByName("host_id"))
+	period := utils.FilterId(c.Params.ByName("period"))
 
 	req := &request.Request{
 		Method: "GET",

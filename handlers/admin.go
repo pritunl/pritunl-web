@@ -7,7 +7,7 @@ import (
 )
 
 func adminGet(c *gin.Context) {
-	adminId := utils.FilterStr(c.Params.ByName("admin_id"), 128)
+	adminId := utils.FilterId(c.Params.ByName("admin_id"))
 	if adminId != "" {
 		adminId = "/" + adminId
 	}
@@ -34,8 +34,16 @@ type adminPutData struct {
 	LocalOtpAuth bool   `json:"local_otp_auth"`
 }
 
+func (d *adminPutData) Filter() {
+	d.Username = utils.FilterStr(d.Username, 1024)
+	d.Password = utils.FilterText(d.Password, 512)
+	d.YubikeyId = utils.FilterId(d.YubikeyId)
+	d.Token = utils.FilterId(d.Token)
+	d.Secret = utils.FilterId(d.Secret)
+}
+
 func adminPut(c *gin.Context) {
-	adminId := utils.FilterStr(c.Params.ByName("admin_id"), 128)
+	adminId := utils.FilterId(c.Params.ByName("admin_id"))
 	data := &adminPutData{}
 
 	req := &request.Request{
@@ -58,6 +66,12 @@ type adminPostData struct {
 	SuperUser    bool   `json:"super_user"`
 }
 
+func (d *adminPostData) Filter() {
+	d.Username = utils.FilterStr(d.Username, 1024)
+	d.Password = utils.FilterText(d.Password, 512)
+	d.YubikeyId = utils.FilterId(d.YubikeyId)
+}
+
 func adminPost(c *gin.Context) {
 	data := &adminPostData{}
 
@@ -71,7 +85,7 @@ func adminPost(c *gin.Context) {
 }
 
 func adminDelete(c *gin.Context) {
-	adminId := utils.FilterStr(c.Params.ByName("admin_id"), 128)
+	adminId := utils.FilterId(c.Params.ByName("admin_id"))
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -82,7 +96,7 @@ func adminDelete(c *gin.Context) {
 }
 
 func adminAuditGet(c *gin.Context) {
-	adminId := utils.FilterStr(c.Params.ByName("admin_id"), 128)
+	adminId := utils.FilterId(c.Params.ByName("admin_id"))
 
 	req := &request.Request{
 		Method: "GET",

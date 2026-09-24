@@ -1,19 +1,21 @@
 package handlers
 
 import (
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/request"
 	"github.com/pritunl/pritunl-web/utils"
 )
 
 func serverGet(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
 	if serverId != "" {
 		serverId = "/" + serverId
 	}
 
 	var query map[string]string
-	page := c.Query("page")
+	page := utils.FilterId(c.Query("page"))
 	if page != "" {
 		query = map[string]string{
 			"page": page,
@@ -88,14 +90,51 @@ type serverPostPutData struct {
 	Multihome        bool        `json:"multihome"`
 }
 
+func (d *serverPostPutData) Filter() {
+	d.Name = utils.FilterStr(d.Name, 1024)
+	d.Network = utils.FilterStr(d.Network, 1024)
+	d.NetworkWg = utils.FilterStr(d.NetworkWg, 1024)
+	d.NetworkMode = utils.FilterId(d.NetworkMode)
+	d.NetworkStart = utils.FilterDomain(d.NetworkStart)
+	d.NetworkEnd = utils.FilterDomain(d.NetworkEnd)
+	d.BindAddress = utils.FilterDomain(d.BindAddress)
+	d.Protocol = utils.FilterId(d.Protocol)
+	d.AllowedDevices = utils.FilterId(d.AllowedDevices)
+	d.Cipher = utils.FilterId(d.Cipher)
+	d.Hash = utils.FilterId(d.Hash)
+	d.PreConnectMsg = utils.FilterText(d.PreConnectMsg, 8192)
+	d.Policy = utils.FilterStr(d.Policy, 1024)
+
+	for i, group := range d.Groups {
+		d.Groups[i] = utils.FilterStr(group, 1024)
+	}
+
+	for i, dnsServer := range d.DnsServers {
+		d.DnsServers[i] = utils.FilterDomain(dnsServer)
+	}
+
+	if d.SearchDomain != "" {
+		domains := []string{}
+		for _, domain := range strings.Split(d.SearchDomain, ",") {
+			domain = utils.FilterDomain(strings.TrimSpace(domain))
+			if domain != "" {
+				domains = append(domains, domain)
+			}
+		}
+		d.SearchDomain = strings.Join(domains, ", ")
+	}
+
+	switch mssFix := d.MssFix.(type) {
+	case string:
+		d.MssFix = utils.FilterId(mssFix)
+	case float64, int:
+	default:
+		d.MssFix = nil
+	}
+}
+
 func serverPost(c *gin.Context) {
 	data := &serverPostPutData{}
-
-	switch data.MssFix.(type) {
-	case string, int:
-	default:
-		data.MssFix = nil
-	}
 
 	req := &request.Request{
 		Method: "POST",
@@ -107,14 +146,8 @@ func serverPost(c *gin.Context) {
 }
 
 func serverPut(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
 	data := &serverPostPutData{}
-
-	switch data.MssFix.(type) {
-	case string, int:
-	default:
-		data.MssFix = nil
-	}
 
 	req := &request.Request{
 		Method: "PUT",
@@ -126,7 +159,7 @@ func serverPut(c *gin.Context) {
 }
 
 func serverDelete(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -137,7 +170,7 @@ func serverDelete(c *gin.Context) {
 }
 
 func serverOrgGet(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
 
 	req := &request.Request{
 		Method: "GET",
@@ -148,8 +181,8 @@ func serverOrgGet(c *gin.Context) {
 }
 
 func serverOrgPut(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
 
 	req := &request.Request{
 		Method: "PUT",
@@ -160,8 +193,8 @@ func serverOrgPut(c *gin.Context) {
 }
 
 func serverOrgDelete(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -172,7 +205,7 @@ func serverOrgDelete(c *gin.Context) {
 }
 
 func serverRouteGet(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
 
 	req := &request.Request{
 		Method: "GET",
@@ -196,8 +229,31 @@ type serverRoutePostPutData struct {
 	NetGateway        bool     `json:"net_gateway"`
 }
 
+func (d *serverRoutePostPutData) Filter() {
+	d.Network = utils.FilterStr(d.Network, 1024)
+	d.Comment = utils.FilterStr(d.Comment, 1024)
+	d.NatInterface = utils.FilterStr(d.NatInterface, 1024)
+	d.NatNetmap = utils.FilterStr(d.NatNetmap, 1024)
+	d.VpcRegion = utils.FilterId(d.VpcRegion)
+	d.VpcId = utils.FilterId(d.VpcId)
+
+	for i, resource := range d.AdvertiseResource {
+		d.AdvertiseResource[i] = utils.FilterStr(resource, 1024)
+	}
+}
+
+type serverRoutesPostData []*serverRoutePostPutData
+
+func (d *serverRoutesPostData) Filter() {
+	for _, route := range *d {
+		if route != nil {
+			route.Filter()
+		}
+	}
+}
+
 func serverRoutePost(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
 	data := &serverRoutePostPutData{}
 
 	req := &request.Request{
@@ -210,8 +266,8 @@ func serverRoutePost(c *gin.Context) {
 }
 
 func serverRoutesPost(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
-	data := []*serverRoutePostPutData{}
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
+	data := serverRoutesPostData{}
 
 	req := &request.Request{
 		Method: "POST",
@@ -223,8 +279,8 @@ func serverRoutesPost(c *gin.Context) {
 }
 
 func serverRoutePut(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
-	routeNet := utils.FilterStr(c.Params.ByName("route_net"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
+	routeNet := utils.FilterId(c.Params.ByName("route_net"))
 	data := &serverRoutePostPutData{}
 
 	req := &request.Request{
@@ -237,8 +293,8 @@ func serverRoutePut(c *gin.Context) {
 }
 
 func serverRouteDelete(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
-	routeNet := utils.FilterStr(c.Params.ByName("route_net"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
+	routeNet := utils.FilterId(c.Params.ByName("route_net"))
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -249,7 +305,7 @@ func serverRouteDelete(c *gin.Context) {
 }
 
 func serverHostGet(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
 
 	req := &request.Request{
 		Method: "GET",
@@ -260,8 +316,8 @@ func serverHostGet(c *gin.Context) {
 }
 
 func serverHostPut(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
-	hostId := utils.FilterStr(c.Params.ByName("host_id"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
+	hostId := utils.FilterId(c.Params.ByName("host_id"))
 
 	req := &request.Request{
 		Method: "PUT",
@@ -272,8 +328,8 @@ func serverHostPut(c *gin.Context) {
 }
 
 func serverHostDelete(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
-	hostId := utils.FilterStr(c.Params.ByName("host_id"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
+	hostId := utils.FilterId(c.Params.ByName("host_id"))
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -284,7 +340,7 @@ func serverHostDelete(c *gin.Context) {
 }
 
 func serverLinkGet(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
 
 	req := &request.Request{
 		Method: "GET",
@@ -298,9 +354,11 @@ type serverLinkPutData struct {
 	UseLocalAddress bool `json:"use_local_address"`
 }
 
+func (d *serverLinkPutData) Filter() {}
+
 func serverLinkPut(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
 	data := &serverLinkPutData{}
 
 	req := &request.Request{
@@ -313,8 +371,8 @@ func serverLinkPut(c *gin.Context) {
 }
 
 func serverLinkDelete(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -325,8 +383,8 @@ func serverLinkDelete(c *gin.Context) {
 }
 
 func serverOperationPut(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
-	operation := utils.FilterStr(c.Params.ByName("operation"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
+	operation := utils.FilterId(c.Params.ByName("operation"))
 
 	req := &request.Request{
 		Method: "PUT",
@@ -337,7 +395,7 @@ func serverOperationPut(c *gin.Context) {
 }
 
 func serverOutputGet(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
 
 	req := &request.Request{
 		Method: "GET",
@@ -348,7 +406,7 @@ func serverOutputGet(c *gin.Context) {
 }
 
 func serverOutputDelete(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -359,7 +417,7 @@ func serverOutputDelete(c *gin.Context) {
 }
 
 func serverLinkOutputGet(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
 
 	req := &request.Request{
 		Method: "GET",
@@ -370,7 +428,7 @@ func serverLinkOutputGet(c *gin.Context) {
 }
 
 func serverLinkOutputDelete(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -381,8 +439,8 @@ func serverLinkOutputDelete(c *gin.Context) {
 }
 
 func serverBandwidthGet(c *gin.Context) {
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
-	period := utils.FilterStr(c.Params.ByName("period"), 128)
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
+	period := utils.FilterId(c.Params.ByName("period"))
 
 	req := &request.Request{
 		Method: "GET",

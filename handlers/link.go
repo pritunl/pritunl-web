@@ -8,7 +8,7 @@ import (
 
 func linkGet(c *gin.Context) {
 	var query map[string]string
-	page := c.Query("page")
+	page := utils.FilterId(c.Query("page"))
 	if page != "" {
 		query = map[string]string{
 			"page": page,
@@ -38,6 +38,16 @@ type linkPostData struct {
 	ForcePreferred bool   `json:"force_preferred"`
 }
 
+func (d *linkPostData) Filter() {
+	d.Name = utils.FilterStr(d.Name, 1024)
+	d.Type = utils.FilterId(d.Type)
+	d.Status = utils.FilterId(d.Status)
+	d.Protocol = utils.FilterId(d.Protocol)
+	d.Action = utils.FilterId(d.Action)
+	d.PreferredIke = utils.FilterId(d.PreferredIke)
+	d.PreferredEsp = utils.FilterId(d.PreferredEsp)
+}
+
 func linkPost(c *gin.Context) {
 	data := &linkPostData{}
 
@@ -64,12 +74,22 @@ type linkPutData struct {
 	ForcePreferred bool   `json:"force_preferred"`
 }
 
+func (d *linkPutData) Filter() {
+	d.Name = utils.FilterStr(d.Name, 1024)
+	d.Status = utils.FilterId(d.Status)
+	d.Protocol = utils.FilterId(d.Protocol)
+	d.Action = utils.FilterId(d.Action)
+	d.PreferredIke = utils.FilterId(d.PreferredIke)
+	d.PreferredEsp = utils.FilterId(d.PreferredEsp)
+}
+
 type linkStateHostData struct {
 	State   bool `json:"state"`
 	Latency int  `json:"latency"`
 }
 
 type linkStatePutData struct {
+	Timestamp     int64                        `json:"timestamp"`
 	Version       string                       `json:"version"`
 	PublicAddress string                       `json:"public_address"`
 	LocalAddress  string                       `json:"local_address"`
@@ -79,6 +99,35 @@ type linkStatePutData struct {
 	Status        map[string]string            `json:"status"`
 	Hosts         map[string]linkStateHostData `json:"hosts"`
 	Errors        []string                     `json:"errors"`
+}
+
+func (d *linkStatePutData) Filter() {
+	d.Version = utils.FilterStr(d.Version, 1024)
+	d.PublicAddress = utils.FilterDomain(d.PublicAddress)
+	d.LocalAddress = utils.FilterDomain(d.LocalAddress)
+	d.Address6 = utils.FilterDomain(d.Address6)
+	d.Provider = utils.FilterStr(d.Provider, 1024)
+	d.WgPublicKey = utils.FilterBase64(d.WgPublicKey)
+
+	if d.Status != nil {
+		status := make(map[string]string, len(d.Status))
+		for key, val := range d.Status {
+			status[utils.FilterId(key)] = utils.FilterStr(val, 1024)
+		}
+		d.Status = status
+	}
+
+	if d.Hosts != nil {
+		hosts := make(map[string]linkStateHostData, len(d.Hosts))
+		for key, val := range d.Hosts {
+			hosts[utils.FilterId(key)] = val
+		}
+		d.Hosts = hosts
+	}
+
+	for i, e := range d.Errors {
+		d.Errors[i] = utils.FilterStr(e, 1024)
+	}
 }
 
 func linkStatePut(c *gin.Context) {
@@ -103,7 +152,7 @@ func linkStateDelete(c *gin.Context) {
 }
 
 func linkPut(c *gin.Context) {
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
 	data := &linkPutData{}
 
 	req := &request.Request{
@@ -116,7 +165,7 @@ func linkPut(c *gin.Context) {
 }
 
 func linkDelete(c *gin.Context) {
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -127,7 +176,7 @@ func linkDelete(c *gin.Context) {
 }
 
 func linkLocationGet(c *gin.Context) {
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
 
 	req := &request.Request{
 		Method: "GET",
@@ -143,8 +192,14 @@ type linkLocationPostData struct {
 	Location string `json:"location"`
 }
 
+func (d *linkLocationPostData) Filter() {
+	d.Name = utils.FilterStr(d.Name, 1024)
+	d.LinkId = utils.FilterId(d.LinkId)
+	d.Location = utils.FilterStr(d.Location, 1024)
+}
+
 func linkLocationPost(c *gin.Context) {
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
 	data := &linkLocationPostData{}
 
 	req := &request.Request{
@@ -162,9 +217,15 @@ type linkLocationPutData struct {
 	Location string `json:"location"`
 }
 
+func (d *linkLocationPutData) Filter() {
+	d.Name = utils.FilterStr(d.Name, 1024)
+	d.LinkId = utils.FilterId(d.LinkId)
+	d.Location = utils.FilterStr(d.Location, 1024)
+}
+
 func linkLocationPut(c *gin.Context) {
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
-	locationId := utils.FilterStr(c.Params.ByName("location_id"), 128)
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
+	locationId := utils.FilterId(c.Params.ByName("location_id"))
 	data := &linkLocationPutData{}
 
 	req := &request.Request{
@@ -177,8 +238,8 @@ func linkLocationPut(c *gin.Context) {
 }
 
 func linkLocationDelete(c *gin.Context) {
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
-	locationId := utils.FilterStr(c.Params.ByName("location_id"), 128)
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
+	locationId := utils.FilterId(c.Params.ByName("location_id"))
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -192,9 +253,13 @@ type linkLocationRoutePostData struct {
 	Network string `json:"network"`
 }
 
+func (d *linkLocationRoutePostData) Filter() {
+	d.Network = utils.FilterStr(d.Network, 1024)
+}
+
 func linkLocationRoutePost(c *gin.Context) {
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
-	locationId := utils.FilterStr(c.Params.ByName("location_id"), 128)
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
+	locationId := utils.FilterId(c.Params.ByName("location_id"))
 	data := &linkLocationRoutePostData{}
 
 	req := &request.Request{
@@ -210,10 +275,14 @@ type linkLocationRoutePutData struct {
 	Network string `json:"network"`
 }
 
+func (d *linkLocationRoutePutData) Filter() {
+	d.Network = utils.FilterStr(d.Network, 1024)
+}
+
 func linkLocationRoutePut(c *gin.Context) {
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
-	locationId := utils.FilterStr(c.Params.ByName("location_id"), 128)
-	routeId := utils.FilterStr(c.Params.ByName("route_id"), 128)
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
+	locationId := utils.FilterId(c.Params.ByName("location_id"))
+	routeId := utils.FilterId(c.Params.ByName("route_id"))
 	data := &linkLocationRoutePutData{}
 
 	req := &request.Request{
@@ -227,9 +296,9 @@ func linkLocationRoutePut(c *gin.Context) {
 }
 
 func linkLocationRouteDelete(c *gin.Context) {
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
-	locationId := utils.FilterStr(c.Params.ByName("location_id"), 128)
-	routeId := utils.FilterStr(c.Params.ByName("route_id"), 128)
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
+	locationId := utils.FilterId(c.Params.ByName("location_id"))
+	routeId := utils.FilterId(c.Params.ByName("route_id"))
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -241,9 +310,9 @@ func linkLocationRouteDelete(c *gin.Context) {
 }
 
 func linkLocationHostUriGet(c *gin.Context) {
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
-	locationId := utils.FilterStr(c.Params.ByName("location_id"), 128)
-	hostId := utils.FilterStr(c.Params.ByName("host_id"), 128)
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
+	locationId := utils.FilterId(c.Params.ByName("location_id"))
+	hostId := utils.FilterId(c.Params.ByName("host_id"))
 
 	req := &request.Request{
 		Method: "GET",
@@ -255,9 +324,9 @@ func linkLocationHostUriGet(c *gin.Context) {
 }
 
 func linkLocationHostConfGet(c *gin.Context) {
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
-	locationId := utils.FilterStr(c.Params.ByName("location_id"), 128)
-	hostId := utils.FilterStr(c.Params.ByName("host_id"), 128)
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
+	locationId := utils.FilterId(c.Params.ByName("location_id"))
+	hostId := utils.FilterId(c.Params.ByName("host_id"))
 
 	req := &request.Request{
 		Method: "GET",
@@ -280,9 +349,17 @@ type linkLocationHostPostData struct {
 	WgPublicKey   string `json:"wg_public_key"`
 }
 
+func (d *linkLocationHostPostData) Filter() {
+	d.Name = utils.FilterStr(d.Name, 1024)
+	d.PublicAddress = utils.FilterDomain(d.PublicAddress)
+	d.LocalAddress = utils.FilterDomain(d.LocalAddress)
+	d.Address6 = utils.FilterDomain(d.Address6)
+	d.WgPublicKey = utils.FilterBase64(d.WgPublicKey)
+}
+
 func linkLocationHostPost(c *gin.Context) {
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
-	locationId := utils.FilterStr(c.Params.ByName("location_id"), 128)
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
+	locationId := utils.FilterId(c.Params.ByName("location_id"))
 	data := &linkLocationHostPostData{}
 
 	req := &request.Request{
@@ -306,10 +383,18 @@ type linkLocationHostPutData struct {
 	WgPublicKey   string `json:"wg_public_key"`
 }
 
+func (d *linkLocationHostPutData) Filter() {
+	d.Name = utils.FilterStr(d.Name, 1024)
+	d.PublicAddress = utils.FilterDomain(d.PublicAddress)
+	d.LocalAddress = utils.FilterDomain(d.LocalAddress)
+	d.Address6 = utils.FilterDomain(d.Address6)
+	d.WgPublicKey = utils.FilterBase64(d.WgPublicKey)
+}
+
 func linkLocationHostPut(c *gin.Context) {
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
-	locationId := utils.FilterStr(c.Params.ByName("location_id"), 128)
-	hostId := utils.FilterStr(c.Params.ByName("host_id"), 128)
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
+	locationId := utils.FilterId(c.Params.ByName("location_id"))
+	hostId := utils.FilterId(c.Params.ByName("host_id"))
 	data := &linkLocationHostPutData{}
 
 	req := &request.Request{
@@ -323,9 +408,9 @@ func linkLocationHostPut(c *gin.Context) {
 }
 
 func linkLocationHostDelete(c *gin.Context) {
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
-	locationId := utils.FilterStr(c.Params.ByName("location_id"), 128)
-	hostId := utils.FilterStr(c.Params.ByName("host_id"), 128)
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
+	locationId := utils.FilterId(c.Params.ByName("location_id"))
+	hostId := utils.FilterId(c.Params.ByName("host_id"))
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -340,9 +425,13 @@ type linkLocationPeerPostData struct {
 	PeerId string `json:"peer_id"`
 }
 
+func (d *linkLocationPeerPostData) Filter() {
+	d.PeerId = utils.FilterId(d.PeerId)
+}
+
 func linkLocationPeerPost(c *gin.Context) {
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
-	locationId := utils.FilterStr(c.Params.ByName("location_id"), 128)
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
+	locationId := utils.FilterId(c.Params.ByName("location_id"))
 	data := &linkLocationPeerPostData{}
 
 	req := &request.Request{
@@ -356,9 +445,9 @@ func linkLocationPeerPost(c *gin.Context) {
 }
 
 func linkLocationPeerDelete(c *gin.Context) {
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
-	locationId := utils.FilterStr(c.Params.ByName("location_id"), 128)
-	peerId := utils.FilterStr(c.Params.ByName("peer_id"), 128)
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
+	locationId := utils.FilterId(c.Params.ByName("location_id"))
+	peerId := utils.FilterId(c.Params.ByName("peer_id"))
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -373,9 +462,13 @@ type linkLocationTransitPostData struct {
 	TransitId string `json:"transit_id"`
 }
 
+func (d *linkLocationTransitPostData) Filter() {
+	d.TransitId = utils.FilterId(d.TransitId)
+}
+
 func linkLocationTransitPost(c *gin.Context) {
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
-	locationId := utils.FilterStr(c.Params.ByName("location_id"), 128)
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
+	locationId := utils.FilterId(c.Params.ByName("location_id"))
 	data := &linkLocationTransitPostData{}
 
 	req := &request.Request{
@@ -389,9 +482,9 @@ func linkLocationTransitPost(c *gin.Context) {
 }
 
 func linkLocationTransitDelete(c *gin.Context) {
-	linkId := utils.FilterStr(c.Params.ByName("link_id"), 128)
-	locationId := utils.FilterStr(c.Params.ByName("location_id"), 128)
-	transitId := utils.FilterStr(c.Params.ByName("transit_id"), 128)
+	linkId := utils.FilterId(c.Params.ByName("link_id"))
+	locationId := utils.FilterId(c.Params.ByName("location_id"))
+	transitId := utils.FilterId(c.Params.ByName("transit_id"))
 
 	req := &request.Request{
 		Method: "DELETE",

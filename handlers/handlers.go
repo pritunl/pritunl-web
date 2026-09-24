@@ -205,7 +205,7 @@ func Redirect(c *gin.Context) {
 			return
 		}
 
-		u.Host = utils.StripPort(c.Request.Host)
+		u.Host = utils.FilterDomain(utils.StripPort(c.Request.Host))
 		u.Scheme = "https"
 
 		c.Redirect(http.StatusMovedPermanently, u.String())

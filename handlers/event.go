@@ -7,7 +7,7 @@ import (
 )
 
 func eventGet(c *gin.Context) {
-	cursor := utils.FilterStr(c.Params.ByName("cursor"), 128)
+	cursor := utils.FilterId(c.Params.ByName("cursor"))
 	if cursor != "" {
 		cursor = "/" + cursor
 	}

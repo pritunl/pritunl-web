@@ -10,13 +10,32 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
 	"github.com/pritunl/pritunl-web/errortypes"
+	"github.com/pritunl/pritunl-web/utils"
 )
 
-func copyHeader(dst, src *http.Request, key string) {
-	val := src.Header.Get(key)
+func copyHeader(dst, src *http.Request, key string,
+	filter func(string) string) {
+
+	val := filter(src.Header.Get(key))
 	if val != "" {
 		dst.Header.Set(key, val)
 	}
+}
+
+func filterForwardedHeader(val string) string {
+	if val == "" {
+		return ""
+	}
+
+	addrs := []string{}
+	for _, addr := range strings.Split(val, ",") {
+		addr = utils.FilterDomain(strings.TrimSpace(addr))
+		if addr != "" {
+			addrs = append(addrs, addr)
+		}
+	}
+
+	return strings.Join(addrs, ",")
 }
 
 func copyHeaders(dst, src http.Header) {

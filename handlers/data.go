@@ -7,8 +7,8 @@ import (
 )
 
 func dataKeyGet(c *gin.Context) {
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
-	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
+	userId := utils.FilterStr(c.Params.ByName("user_id"), 512)
 
 	req := &request.Request{
 		Method: "GET",
@@ -19,9 +19,9 @@ func dataKeyGet(c *gin.Context) {
 }
 
 func dataServerKeyGet(c *gin.Context) {
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
-	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
+	userId := utils.FilterId(c.Params.ByName("user_id"))
+	serverId := utils.FilterStr(c.Params.ByName("server_id"), 512)
 
 	req := &request.Request{
 		Method: "GET",

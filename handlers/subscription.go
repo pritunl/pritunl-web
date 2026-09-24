@@ -16,8 +16,8 @@ func subscriptionGet(c *gin.Context) {
 }
 
 func subscriptionStylesGet(c *gin.Context) {
-	plan := utils.FilterStr(c.Params.ByName("plan"), 128)
-	ver := utils.FilterStr(c.Params.ByName("ver"), 128)
+	plan := utils.FilterId(c.Params.ByName("plan"))
+	ver := utils.FilterStr(c.Params.ByName("ver"), 512)
 
 	req := &request.Request{
 		Method: "GET",
@@ -29,6 +29,10 @@ func subscriptionStylesGet(c *gin.Context) {
 
 type subscriptionPostData struct {
 	License string `json:"license"`
+}
+
+func (d *subscriptionPostData) Filter() {
+	d.License = utils.FilterText(d.License, 16384)
 }
 
 func subscriptionPost(c *gin.Context) {
@@ -49,6 +53,13 @@ type subscriptionPutData struct {
 	Plan      string `json:"plan"`
 	PromoCode string `json:"promo_code"`
 	Cancel    bool   `json:"cancel"`
+}
+
+func (d *subscriptionPutData) Filter() {
+	d.Card = utils.FilterId(d.Card)
+	d.Email = utils.FilterStr(d.Email, 1024)
+	d.Plan = utils.FilterId(d.Plan)
+	d.PromoCode = utils.FilterStr(d.PromoCode, 1024)
 }
 
 func subscriptionPut(c *gin.Context) {

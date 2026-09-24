@@ -20,12 +20,17 @@ type deviceRegisterPutData struct {
 	RegKey string `json:"reg_key"`
 }
 
+func (d *deviceRegisterPutData) Filter() {
+	d.Name = utils.FilterStr(d.Name, 1024)
+	d.RegKey = utils.FilterId(d.RegKey)
+}
+
 func deviceRegisterPut(c *gin.Context) {
 	data := &deviceRegisterPutData{}
 
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
-	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
-	deviceId := utils.FilterStr(c.Params.ByName("device_id"), 128)
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
+	userId := utils.FilterId(c.Params.ByName("user_id"))
+	deviceId := utils.FilterId(c.Params.ByName("device_id"))
 
 	req := &request.Request{
 		Method: "PUT",
@@ -37,9 +42,9 @@ func deviceRegisterPut(c *gin.Context) {
 }
 
 func deviceRegisterDelete(c *gin.Context) {
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
-	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
-	deviceId := utils.FilterStr(c.Params.ByName("device_id"), 128)
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
+	userId := utils.FilterId(c.Params.ByName("user_id"))
+	deviceId := utils.FilterId(c.Params.ByName("device_id"))
 
 	req := &request.Request{
 		Method: "DELETE",

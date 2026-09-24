@@ -1,14 +1,16 @@
 package handlers
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/pritunl/pritunl-web/request"
 	"path"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-web/request"
+	"github.com/pritunl/pritunl-web/utils"
 )
 
 func staticPathGet(c *gin.Context) {
-	pth := c.Params.ByName("path")
+	pth := utils.FilterStr(c.Params.ByName("path"), 512)
 	pth = strings.Replace(pth, "..", "", -1)
 	pth = path.Clean(pth)
 

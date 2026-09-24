@@ -9,11 +9,11 @@ import (
 )
 
 func keyGet(c *gin.Context) {
-	param1 := utils.FilterStr(c.Params.ByName("param1"), 128)
-	param2 := utils.FilterStr(c.Params.ByName("param2"), 128)
-	param3 := utils.FilterStr(c.Params.ByName("param3"), 128)
-	param4 := utils.FilterStr(c.Params.ByName("param4"), 128)
-	param5 := utils.FilterStr(c.Params.ByName("param5"), 128)
+	param1 := utils.FilterStr(c.Params.ByName("param1"), 512)
+	param2 := utils.FilterStr(c.Params.ByName("param2"), 512)
+	param3 := utils.FilterStr(c.Params.ByName("param3"), 512)
+	param4 := utils.FilterStr(c.Params.ByName("param4"), 512)
+	param5 := utils.FilterStr(c.Params.ByName("param5"), 512)
 
 	path := "/key/" + param1
 
@@ -45,7 +45,7 @@ func keyGet(c *gin.Context) {
 	}
 
 	if param1 == "request" || param1 == "callback" {
-		req.RawQuery = c.Request.URL.RawQuery
+		req.RawQuery = utils.FilterOpen(c.Request.URL.RawQuery)
 	}
 
 	req.Do(c)
@@ -56,8 +56,13 @@ type userKeyPinPutData struct {
 	CurrentPin string `json:"current_pin"`
 }
 
+func (d *userKeyPinPutData) Filter() {
+	d.Pin = utils.FilterStr(d.Pin, 1024)
+	d.CurrentPin = utils.FilterStr(d.CurrentPin, 1024)
+}
+
 func keyPinPut(c *gin.Context) {
-	keyId := utils.FilterStr(c.Params.ByName("key_id"), 128)
+	keyId := utils.FilterId(c.Params.ByName("key_id"))
 	data := &userKeyPinPutData{}
 
 	req := &request.Request{
@@ -70,7 +75,7 @@ func keyPinPut(c *gin.Context) {
 }
 
 func keyShortGet(c *gin.Context) {
-	shortCode := utils.FilterStr(c.Params.ByName("short_code"), 128)
+	shortCode := utils.FilterId(c.Params.ByName("short_code"))
 
 	req := &request.Request{
 		Method: "GET",
@@ -81,7 +86,7 @@ func keyShortGet(c *gin.Context) {
 }
 
 func keyShortDelete(c *gin.Context) {
-	shortCode := utils.FilterStr(c.Params.ByName("short_code"), 128)
+	shortCode := utils.FilterId(c.Params.ByName("short_code"))
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -92,7 +97,7 @@ func keyShortDelete(c *gin.Context) {
 }
 
 func keyApiShortGet(c *gin.Context) {
-	shortCode := utils.FilterStr(c.Params.ByName("short_code"), 128)
+	shortCode := utils.FilterId(c.Params.ByName("short_code"))
 
 	req := &request.Request{
 		Method: "GET",
@@ -110,10 +115,18 @@ type keyWgPutPostData struct {
 	DeviceSignature string `json:"device_signature"`
 }
 
+func (d *keyWgPutPostData) Filter() {
+	d.Data = utils.FilterBase64(d.Data)
+	d.Nonce = utils.FilterBase64(d.Nonce)
+	d.PublicKey = utils.FilterBase64(d.PublicKey)
+	d.Signature = utils.FilterBase64(d.Signature)
+	d.DeviceSignature = utils.FilterBase64(d.DeviceSignature)
+}
+
 func keyWgPut(c *gin.Context) {
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
-	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
+	userId := utils.FilterId(c.Params.ByName("user_id"))
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
 	data := &keyWgPutPostData{}
 
 	req := &request.Request{
@@ -126,9 +139,9 @@ func keyWgPut(c *gin.Context) {
 }
 
 func keyWgPost(c *gin.Context) {
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
-	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
+	userId := utils.FilterId(c.Params.ByName("user_id"))
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
 	data := &keyWgPutPostData{}
 
 	req := &request.Request{
@@ -148,10 +161,18 @@ type keyOvpnPostData struct {
 	DeviceSignature string `json:"device_signature"`
 }
 
+func (d *keyOvpnPostData) Filter() {
+	d.Data = utils.FilterBase64(d.Data)
+	d.Nonce = utils.FilterBase64(d.Nonce)
+	d.PublicKey = utils.FilterBase64(d.PublicKey)
+	d.Signature = utils.FilterBase64(d.Signature)
+	d.DeviceSignature = utils.FilterBase64(d.DeviceSignature)
+}
+
 func keyOvpnPost(c *gin.Context) {
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
-	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
+	userId := utils.FilterId(c.Params.ByName("user_id"))
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
 	data := &keyOvpnPostData{}
 
 	req := &request.Request{
@@ -171,10 +192,18 @@ type keyOvpnWaitPostData struct {
 	DeviceSignature string `json:"device_signature"`
 }
 
+func (d *keyOvpnWaitPostData) Filter() {
+	d.Data = utils.FilterBase64(d.Data)
+	d.Nonce = utils.FilterBase64(d.Nonce)
+	d.PublicKey = utils.FilterBase64(d.PublicKey)
+	d.Signature = utils.FilterBase64(d.Signature)
+	d.DeviceSignature = utils.FilterBase64(d.DeviceSignature)
+}
+
 func keyOvpnWaitPost(c *gin.Context) {
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
-	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
+	userId := utils.FilterId(c.Params.ByName("user_id"))
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
 	data := &keyOvpnWaitPostData{}
 
 	req := &request.Request{
@@ -194,10 +223,18 @@ type keyWgWaitPostData struct {
 	DeviceSignature string `json:"device_signature"`
 }
 
+func (d *keyWgWaitPostData) Filter() {
+	d.Data = utils.FilterBase64(d.Data)
+	d.Nonce = utils.FilterBase64(d.Nonce)
+	d.PublicKey = utils.FilterBase64(d.PublicKey)
+	d.Signature = utils.FilterBase64(d.Signature)
+	d.DeviceSignature = utils.FilterBase64(d.DeviceSignature)
+}
+
 func keyWgWaitPost(c *gin.Context) {
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
-	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
-	serverId := utils.FilterStr(c.Params.ByName("server_id"), 128)
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
+	userId := utils.FilterId(c.Params.ByName("user_id"))
+	serverId := utils.FilterId(c.Params.ByName("server_id"))
 	data := &keyWgWaitPostData{}
 
 	req := &request.Request{
@@ -211,6 +248,10 @@ func keyWgWaitPost(c *gin.Context) {
 
 type ssoAuthenticatePostData struct {
 	Username string `json:"username"`
+}
+
+func (d *ssoAuthenticatePostData) Filter() {
+	d.Username = utils.FilterStr(d.Username, 1024)
 }
 
 func ssoAuthenticatePost(c *gin.Context) {
@@ -238,7 +279,7 @@ func ssoCallbackGet(c *gin.Context) {
 	req := &request.Request{
 		Method:   "GET",
 		Path:     "/sso/callback",
-		RawQuery: c.Request.URL.RawQuery,
+		RawQuery: utils.FilterOpen(c.Request.URL.RawQuery),
 	}
 
 	req.Do(c)
@@ -247,6 +288,11 @@ func ssoCallbackGet(c *gin.Context) {
 type ssoDuoPostData struct {
 	Token    string `json:"token"`
 	Passcode string `json:"passcode"`
+}
+
+func (d *ssoDuoPostData) Filter() {
+	d.Token = utils.FilterId(d.Token)
+	d.Passcode = utils.FilterId(d.Passcode)
 }
 
 func ssoDuoPost(c *gin.Context) {
@@ -266,6 +312,11 @@ type ssoYubicoPostData struct {
 	Key   string `json:"key"`
 }
 
+func (d *ssoYubicoPostData) Filter() {
+	d.Token = utils.FilterId(d.Token)
+	d.Key = utils.FilterId(d.Key)
+}
+
 func ssoYubicoPost(c *gin.Context) {
 	data := &ssoYubicoPostData{}
 
@@ -283,6 +334,11 @@ type keyDuoPostData struct {
 	Passcode string `json:"passcode"`
 }
 
+func (d *keyDuoPostData) Filter() {
+	d.Token = utils.FilterId(d.Token)
+	d.Passcode = utils.FilterId(d.Passcode)
+}
+
 func keyDuoPost(c *gin.Context) {
 	data := &keyDuoPostData{}
 
@@ -298,6 +354,11 @@ func keyDuoPost(c *gin.Context) {
 type keyYubicoPostData struct {
 	Token string `json:"token"`
 	Key   string `json:"key"`
+}
+
+func (d *keyYubicoPostData) Filter() {
+	d.Token = utils.FilterId(d.Token)
+	d.Key = utils.FilterId(d.Key)
 }
 
 func keyYubicoPost(c *gin.Context) {

@@ -7,26 +7,26 @@ import (
 )
 
 func usersGet(c *gin.Context) {
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
 
 	query := map[string]string{}
 
-	page := c.Query("page")
+	page := utils.FilterId(c.Query("page"))
 	if page != "" {
 		query["page"] = page
 	}
 
-	lastActive := c.Query("last_active")
+	lastActive := utils.FilterId(c.Query("last_active"))
 	if lastActive != "" {
 		query["last_active"] = lastActive
 	}
 
-	search := c.Query("search")
+	search := utils.FilterStr(c.Query("search"), 1024)
 	if search != "" {
 		query["search"] = search
 	}
 
-	limit := c.Query("limit")
+	limit := utils.FilterId(c.Query("limit"))
 	if limit != "" {
 		query["limit"] = limit
 	}
@@ -41,8 +41,8 @@ func usersGet(c *gin.Context) {
 }
 
 func userGet(c *gin.Context) {
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
-	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
+	userId := utils.FilterId(c.Params.ByName("user_id"))
 
 	req := &request.Request{
 		Method: "GET",
@@ -56,6 +56,12 @@ type userPortForwardingData struct {
 	Protocol string `json:"protocol"`
 	Port     string `json:"port"`
 	Dport    string `json:"dport"`
+}
+
+func (d *userPortForwardingData) Filter() {
+	d.Protocol = utils.FilterId(d.Protocol)
+	d.Port = utils.FilterId(d.Port)
+	d.Dport = utils.FilterId(d.Dport)
 }
 
 type userPostData struct {
@@ -75,8 +81,47 @@ type userPostData struct {
 	PortForwarding  []userPortForwardingData `json:"port_forwarding"`
 }
 
+func (d *userPostData) Filter() {
+	d.Name = utils.FilterStr(d.Name, 1024)
+	d.Email = utils.FilterStr(d.Email, 1024)
+	d.AuthType = utils.FilterId(d.AuthType)
+	d.YubicoId = utils.FilterId(d.YubicoId)
+	d.Pin = utils.FilterStr(d.Pin, 1024)
+	d.DnsSuffix = utils.FilterStr(d.DnsSuffix, 1024)
+
+	for i, group := range d.Groups {
+		d.Groups[i] = utils.FilterStr(group, 1024)
+	}
+
+	for i, networkLink := range d.NetworkLinks {
+		d.NetworkLinks[i] = utils.FilterStr(networkLink, 1024)
+	}
+
+	for i, macAddress := range d.MacAddresses {
+		d.MacAddresses[i] = utils.FilterId(macAddress)
+	}
+
+	for i, dnsServer := range d.DnsServers {
+		d.DnsServers[i] = utils.FilterDomain(dnsServer)
+	}
+
+	for i := range d.PortForwarding {
+		d.PortForwarding[i].Filter()
+	}
+}
+
+type userMultiPostData []*userPostData
+
+func (d *userMultiPostData) Filter() {
+	for _, user := range *d {
+		if user != nil {
+			user.Filter()
+		}
+	}
+}
+
 func userPost(c *gin.Context) {
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
 	data := &userPostData{}
 
 	req := &request.Request{
@@ -89,8 +134,8 @@ func userPost(c *gin.Context) {
 }
 
 func userMultiPost(c *gin.Context) {
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
-	data := []*userPostData{}
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
+	data := userMultiPostData{}
 
 	req := &request.Request{
 		Method: "POST",
@@ -119,16 +164,46 @@ type userPutData struct {
 	SendKeyEmail    bool                     `json:"send_key_email"`
 }
 
-func userPut(c *gin.Context) {
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
-	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
-	data := &userPutData{}
+func (d *userPutData) Filter() {
+	d.Name = utils.FilterStr(d.Name, 1024)
+	d.Email = utils.FilterStr(d.Email, 1024)
+	d.AuthType = utils.FilterId(d.AuthType)
+	d.YubicoId = utils.FilterId(d.YubicoId)
+	d.DnsSuffix = utils.FilterStr(d.DnsSuffix, 1024)
 
-	switch data.Pin.(type) {
-	case string, bool:
+	switch pin := d.Pin.(type) {
+	case string:
+		d.Pin = utils.FilterStr(pin, 1024)
+	case bool:
 	default:
-		data.Pin = nil
+		d.Pin = nil
 	}
+
+	for i, group := range d.Groups {
+		d.Groups[i] = utils.FilterStr(group, 1024)
+	}
+
+	for i, networkLink := range d.NetworkLinks {
+		d.NetworkLinks[i] = utils.FilterStr(networkLink, 1024)
+	}
+
+	for i, macAddress := range d.MacAddresses {
+		d.MacAddresses[i] = utils.FilterId(macAddress)
+	}
+
+	for i, dnsServer := range d.DnsServers {
+		d.DnsServers[i] = utils.FilterDomain(dnsServer)
+	}
+
+	for i := range d.PortForwarding {
+		d.PortForwarding[i].Filter()
+	}
+}
+
+func userPut(c *gin.Context) {
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
+	userId := utils.FilterId(c.Params.ByName("user_id"))
+	data := &userPutData{}
 
 	req := &request.Request{
 		Method: "PUT",
@@ -140,8 +215,8 @@ func userPut(c *gin.Context) {
 }
 
 func userDelete(c *gin.Context) {
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
-	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
+	userId := utils.FilterId(c.Params.ByName("user_id"))
 
 	req := &request.Request{
 		Method: "DELETE",
@@ -152,8 +227,8 @@ func userDelete(c *gin.Context) {
 }
 
 func userOtpSecretPut(c *gin.Context) {
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
-	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
+	userId := utils.FilterId(c.Params.ByName("user_id"))
 
 	req := &request.Request{
 		Method: "PUT",
@@ -164,8 +239,8 @@ func userOtpSecretPut(c *gin.Context) {
 }
 
 func userAuditGet(c *gin.Context) {
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
-	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
+	userId := utils.FilterId(c.Params.ByName("user_id"))
 
 	req := &request.Request{
 		Method: "GET",
@@ -180,12 +255,17 @@ type userDevicePutData struct {
 	RegKey string `json:"reg_key"`
 }
 
+func (d *userDevicePutData) Filter() {
+	d.Name = utils.FilterStr(d.Name, 1024)
+	d.RegKey = utils.FilterId(d.RegKey)
+}
+
 func userDevicePut(c *gin.Context) {
 	data := &userDevicePutData{}
 
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
-	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
-	deviceId := utils.FilterStr(c.Params.ByName("device_id"), 128)
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
+	userId := utils.FilterId(c.Params.ByName("user_id"))
+	deviceId := utils.FilterId(c.Params.ByName("device_id"))
 
 	req := &request.Request{
 		Method: "PUT",
@@ -197,9 +277,9 @@ func userDevicePut(c *gin.Context) {
 }
 
 func userDeviceDelete(c *gin.Context) {
-	orgId := utils.FilterStr(c.Params.ByName("org_id"), 128)
-	userId := utils.FilterStr(c.Params.ByName("user_id"), 128)
-	deviceId := utils.FilterStr(c.Params.ByName("device_id"), 128)
+	orgId := utils.FilterId(c.Params.ByName("org_id"))
+	userId := utils.FilterId(c.Params.ByName("user_id"))
+	deviceId := utils.FilterId(c.Params.ByName("device_id"))
 
 	req := &request.Request{
 		Method: "DELETE",

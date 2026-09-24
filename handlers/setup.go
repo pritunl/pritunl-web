@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/request"
+	"github.com/pritunl/pritunl-web/utils"
 )
 
 func setupGet(c *gin.Context) {
@@ -62,6 +63,11 @@ func setupUbuntuWoffStaticGet(c *gin.Context) {
 type setupMongoPutData struct {
 	SetupKey   string `json:"setup_key"`
 	MongodbUri string `json:"mongodb_uri"`
+}
+
+func (d *setupMongoPutData) Filter() {
+	d.SetupKey = utils.FilterId(d.SetupKey)
+	d.MongodbUri = utils.FilterText(d.MongodbUri, 4096)
 }
 
 func setupMongoPut(c *gin.Context) {
