@@ -76,6 +76,7 @@ type serverPostPutData struct {
 	RouteDns         bool        `json:"route_dns"`
 	Debug            bool        `json:"debug"`
 	SsoAuth          bool        `json:"sso_auth"`
+	SsoWebauth       bool        `json:"sso_webauth"`
 	OtpAuth          bool        `json:"otp_auth"`
 	LzoCompression   bool        `json:"lzo_compression"`
 	Cipher           string      `json:"cipher"`
