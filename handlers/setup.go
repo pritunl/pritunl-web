@@ -92,9 +92,18 @@ func setupUpgradeGet(c *gin.Context) {
 }
 
 func successGet(c *gin.Context) {
+	var query map[string]string
+	mode := c.Query("mode")
+	if mode == "webauth" {
+		query = map[string]string{
+			"mode": mode,
+		}
+	}
+
 	req := &request.Request{
 		Method: "GET",
 		Path:   "/success",
+		Query:  query,
 	}
 
 	req.Do(c)
