@@ -166,6 +166,39 @@ func FilterDomain(s string) string {
 	return s + port
 }
 
+func FilterAddress(s string) string {
+	if len(s) == 0 {
+		return ""
+	}
+
+	if s == "self" {
+		s = "invalid-name"
+	}
+
+	if len(s) > domainSafeLimit {
+		s = s[:domainSafeLimit]
+	}
+
+	s = strings.TrimSpace(s)
+
+	if ip := net.ParseIP(strings.Trim(s, "[]")); ip != nil {
+		return ip.String()
+	}
+
+	var ns strings.Builder
+	for _, c := range s {
+		if domainSafeChar.Contains(c) {
+			ns.WriteString(string(c))
+		}
+	}
+
+	s = ns.String()
+	s = strings.TrimPrefix(s, ".")
+	s = strings.TrimSuffix(s, ".")
+
+	return s
+}
+
 func FilterBase64(s string) string {
 	if len(s) == 0 {
 		return ""
