@@ -47,14 +47,14 @@ type hostPutData struct {
 
 func (d *hostPutData) Filter() {
 	d.Name = utils.FilterStr(d.Name, 1024)
-	d.PublicAddress = utils.FilterDomain(d.PublicAddress)
-	d.PublicAddress6 = utils.FilterDomain(d.PublicAddress6)
+	d.PublicAddress = utils.FilterAddress(d.PublicAddress)
+	d.PublicAddress6 = utils.FilterAddress(d.PublicAddress6)
 	d.RoutedSubnet6 = utils.FilterStr(d.RoutedSubnet6, 1024)
 	d.RoutedSubnet6Wg = utils.FilterStr(d.RoutedSubnet6Wg, 1024)
-	d.LocalAddress = utils.FilterDomain(d.LocalAddress)
-	d.LocalAddress6 = utils.FilterDomain(d.LocalAddress6)
-	d.LinkAddress = utils.FilterDomain(d.LinkAddress)
-	d.SyncAddress = utils.FilterDomain(d.SyncAddress)
+	d.LocalAddress = utils.FilterAddress(d.LocalAddress)
+	d.LocalAddress6 = utils.FilterAddress(d.LocalAddress6)
+	d.LinkAddress = utils.FilterAddress(d.LinkAddress)
+	d.SyncAddress = utils.FilterAddress(d.SyncAddress)
 	d.AvailabilityGroup = utils.FilterStr(d.AvailabilityGroup, 1024)
 	d.InstanceId = utils.FilterStr(d.InstanceId, 1024)
 }
