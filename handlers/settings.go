@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-web/request"
 	"github.com/pritunl/pritunl-web/utils"
@@ -169,7 +171,16 @@ func (d *settingsPutData) Filter() {
 	d.SsoYubicoClient = utils.FilterId(d.SsoYubicoClient)
 	d.SsoYubicoSecret = utils.FilterStr(d.SsoYubicoSecret, 512)
 	d.SsoRadiusSecret = utils.FilterText(d.SsoRadiusSecret, 1024)
-	d.SsoRadiusHost = utils.FilterDomain(d.SsoRadiusHost)
+	if d.SsoRadiusHost != "" {
+		hosts := []string{}
+		for _, host := range strings.Split(d.SsoRadiusHost, ",") {
+			host = utils.FilterDomain(strings.TrimSpace(host))
+			if host != "" {
+				hosts = append(hosts, host)
+			}
+		}
+		d.SsoRadiusHost = strings.Join(hosts, ",")
+	}
 	d.SsoOrg = utils.FilterId(d.SsoOrg)
 	d.SsoSamlUrl = utils.FilterStr(d.SsoSamlUrl, 4096)
 	d.SsoSamlIssuerUrl = utils.FilterStr(d.SsoSamlIssuerUrl, 4096)
@@ -185,8 +196,8 @@ func (d *settingsPutData) Filter() {
 	d.SsoJumpCloudSecret = utils.FilterStr(d.SsoJumpCloudSecret, 512)
 	d.ServerSsoUrl = utils.FilterStr(d.ServerSsoUrl, 4096)
 	d.Theme = utils.FilterId(d.Theme)
-	d.PublicAddress = utils.FilterDomain(d.PublicAddress)
-	d.PublicAddress6 = utils.FilterDomain(d.PublicAddress6)
+	d.PublicAddress = utils.FilterAddress(d.PublicAddress)
+	d.PublicAddress6 = utils.FilterAddress(d.PublicAddress6)
 	d.RoutedSubnet6 = utils.FilterStr(d.RoutedSubnet6, 1024)
 	d.RoutedSubnet6Wg = utils.FilterStr(d.RoutedSubnet6Wg, 1024)
 	d.CloudProvider = utils.FilterId(d.CloudProvider)
