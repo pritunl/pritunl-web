@@ -54,7 +54,7 @@ func (d *hostPutData) Filter() {
 	d.LocalAddress = utils.FilterAddress(d.LocalAddress)
 	d.LocalAddress6 = utils.FilterAddress(d.LocalAddress6)
 	d.LinkAddress = utils.FilterAddress(d.LinkAddress)
-	d.SyncAddress = utils.FilterAddress(d.SyncAddress)
+	d.SyncAddress = utils.FilterDomain(d.SyncAddress)
 	d.AvailabilityGroup = utils.FilterStr(d.AvailabilityGroup, 1024)
 	d.InstanceId = utils.FilterStr(d.InstanceId, 1024)
 }
